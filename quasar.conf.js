@@ -110,8 +110,8 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'Ingics GLEGW Demo Board',
-        short_name: 'Ingics GLEGW Demo Board',
+        name: 'Ingics BLE-GW Demo Board',
+        short_name: 'Ingics BLE-GW Demo Board',
         description: 'Dashboard application for Ingics BLEGW demostration or testing',
         display: 'standalone',
         orientation: 'portrait',

@@ -1,4 +1,4 @@
-# Ingics GLEGW Demo Board (ingics-blegw-demoboard)
+# Ingics BLE-GW Demo Board (ingics-blegw-demoboard)
 
 Dashboard application for Ingics BLEGW demostration or testing
 
