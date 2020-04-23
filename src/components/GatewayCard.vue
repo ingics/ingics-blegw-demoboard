@@ -2,7 +2,7 @@
     <q-card class="gateway-card">
         <q-card-section class="gateway-card-header">
             <div class="row items-center no-wrap">
-                <div class="col">
+                <div class="col cursor-pointer" @click="$emit('selected', name)">
                     {{ name }}
                 </div>
                 <div class="auto-col">
