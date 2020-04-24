@@ -189,6 +189,9 @@ export default {
                 me.activeClientPause = false
                 me.activeClientStatus = false
             })
+            this.activeClient.on('error', function (error) {
+                me.$q.notify({ message: error.toString(), color: 'red' })
+            })
         },
         activateM2mGateway () {
             const me = this
@@ -212,6 +215,9 @@ export default {
                 // not sure what should i do
                 me.activeClient.close()
                 me.activeClient.connect(this.currentCfg.port, this.currentCfg.host)
+            })
+            this.activeClient.on('error', function (error) {
+                me.$q.notify({ message: error.toString(), color: 'red' })
             })
             this.activeClient.connect(this.currentCfg.port, this.currentCfg.host)
         },
