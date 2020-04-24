@@ -15,18 +15,18 @@
             <q-list>
                 <q-item>
                     <q-item-section>
-                    <q-item-label>Host</q-item-label>
-                    <q-item-label caption>{{ host }}</q-item-label>
+                    <q-item-label class="q-table__grid-item-title">Host</q-item-label>
+                    <q-item-label class="q-table__grid-item-value">{{ host }}</q-item-label>
                     </q-item-section>
                     <q-item-section>
-                    <q-item-label>Port</q-item-label>
-                    <q-item-label caption>{{ port }}</q-item-label>
+                    <q-item-label class="q-table__grid-item-title">Port</q-item-label>
+                    <q-item-label class="q-table__grid-item-value">{{ port }}</q-item-label>
                     </q-item-section>
                 </q-item>
                 <q-item>
                     <q-item-section>
-                    <q-item-label>Subscribe Topic</q-item-label>
-                    <q-item-label caption>{{ topic }}</q-item-label>
+                    <q-item-label class="q-table__grid-item-title">Subscribe Topic</q-item-label>
+                    <q-item-label class="q-table__grid-item-value">{{ topic }}</q-item-label>
                     </q-item-section>
                 </q-item>
             </q-list>

@@ -26,6 +26,7 @@
                     dense
                     round
                     icon="receipt"
+                    @click="browseMode='log'"
                 ><q-tooltip>Logs</q-tooltip></q-btn>
                 <q-btn
                     v-if="activeClient"
@@ -33,6 +34,7 @@
                     dense
                     round
                     icon="style"
+                    @click="browseMode='beacon'"
                 ><q-tooltip>Beacons</q-tooltip></q-btn>
             </q-toolbar>
         </q-header>
@@ -75,23 +77,26 @@
         <q-page-sticky v-if="!activeClient" position="bottom-right" :offset="[18, 18]">
             <q-btn fab icon="add" color="accent" @click="launchGatewayCfg(null)" />
         </q-page-sticky>
-        <log-browser v-if="activeClient" :logs="logs" />
+        <log-browser v-if="activeClient && browseMode=='log'" :logs="logs" />
+        <beacon-browser v-if="activeClient && browseMode=='beacon'" :beacons="beacons" />
     </q-page>
 </template>
 
 <script>
 import mqtt from 'mqtt'
 import moment from 'moment'
+import { parseMessage } from '@ingics/message-parser'
 import GatewayCard from '../components/GatewayCard'
 import GatewayCfgDialog from '../components/GatewayCfgDialog'
 import LogBrowser from '../components/LogBrowser'
-import { parseMessage } from '@ingics/message-parser'
+import BeaconBrowser from '../components/BeaconBrowser'
 export default {
     name: 'PageIndex',
     components: {
         GatewayCard,
         GatewayCfgDialog,
-        LogBrowser
+        LogBrowser,
+        BeaconBrowser
     },
     data () {
         return {
@@ -109,7 +114,8 @@ export default {
             clients: {},
             activeClient: undefined,
             logs: [],
-            beacons: []
+            beacons: [],
+            browseMode: 'log'
         }
     },
     methods: {
@@ -196,20 +202,20 @@ export default {
             if ('parsedPayload' in data) {
                 const parsed = data.parsedPayload
                 const { mfg, type } = parsed
+                tokens.push(`${mfg} ${type || 'Unknown'}`)
                 if (mfg === 'Ingics') {
                     this.collectIngicsBeaconAttributes(tokens, parsed)
                 } else if (mfg === 'Apple' && type === 'iBeacon') {
                     const { uuid, major, minor, tx } = parsed
-                    tokens.push(`uuid: ${uuid}`)
+                    tokens.push(`uuid: ${uuid.toLocaleUpperCase()}`)
                     tokens.push(`major: ${major}`)
                     tokens.push(`minor: ${minor}`)
                     tokens.push(`tx power: ${tx}`)
                 }
             }
-            return tokens.join('')
+            return tokens.join(', ')
         },
         updateBeacons (payload) {
-            const me = this
             if (!payload.startsWith('$GPRP')) {
                 // take care beacon update for GPRP data only
                 // and only show beacon detail for ingics beacon & iBeacon
@@ -221,12 +227,21 @@ export default {
                         mac: data.beacon,
                         rssi: data.rssi,
                         payload: data.payload,
-                        message: me.collectPayloadMessage(data),
+                        message: this.collectPayloadMessage(data),
                         timestamp: moment()
                     }
-                    const idx = this.beacons.findIndex(v => v.mac === beacon.mac)
-                    if (idx >= 0) { this.beacons.splice(idx, 1) }
-                    this.beacons.splice(0, 0, beacon)
+                    // const idx = this.beacons.findIndex(v => v.mac === beacon.mac)
+                    // if (idx >= 0) { this.beacons.splice(idx, 1) }
+                    // this.beacons.splice(0, 0, beacon)
+                    const old = this.beacons.find(v => v.mac === beacon.mac)
+                    if (old) {
+                        this.$set(old, 'rssi', beacon.rssi)
+                        this.$set(old, 'payload', beacon.payload)
+                        this.$set(old, 'message', beacon.message)
+                        this.$set(old, 'timestamp', beacon.timestamp)
+                    } else {
+                        this.beacons.push(beacon)
+                    }
                 })
             } catch {}
         }
