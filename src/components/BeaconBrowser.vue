@@ -9,13 +9,22 @@
             :grid="!$q.screen.gt.md"
             :pagination.sync="pageOption"
             class="q-pa-md"
+            :filter-method="doFilter"
         >
             <template v-slot:top-right>
-                <q-input outlined borderless dense debounce="300" v-model="filter" placeholder="Search">
+                <q-input
+                    outlined borderless dense debounce="300"
+                    v-model="filter.search" placeholder="Search"
+                >
                     <template v-slot:append>
                         <q-icon name="search" />
                     </template>
                 </q-input>
+                <q-btn
+                    flat round
+                    icon="filter_list"
+                    @click="filterDialog = !filterDialog"
+                ><q-tooltip>Filter</q-tooltip></q-btn>
             </template>
             <template v-slot:item="props">
                 <div class="q-pa-sm col-xs-12 col-sm-6 col-md-4">
@@ -66,6 +75,24 @@
                 </div>
             </template>
         </q-table>
+        <q-dialog v-model="filterDialog">
+            <q-card class="q-pa-md" :style="{minWidth: '65vw'}">
+                <q-item>
+                    <q-item-section avatar class="q-pr-sm">
+                        <q-icon color="primary" name="equalizer" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-slider
+                            v-model="filter.rssi"
+                            :min="-125"
+                            :max="0"
+                            label
+                            :label-value="'RSSI throughold ' + filter.rssi"
+                        />
+                    </q-item-section>
+                </q-item>
+            </q-card>
+        </q-dialog>
     </div>
 </template>
 
@@ -120,7 +147,22 @@ export default {
                 rowsPerPage: 0,
                 sortBy: undefined
             },
-            filter: ''
+            filter: {
+                rssi: -100,
+                search: ''
+            },
+            filterDialog: false
+        }
+    },
+    methods: {
+        doFilter (rows, terms, cols, getCellValue) {
+            const s = terms.search.toLowerCase()
+            return rows.filter(row => {
+                return row !== null &&
+                    (row.mac.toLowerCase().indexOf(s) !== -1 ||
+                     row.message.toLowerCase().indexOf(s) !== -1) &&
+                    row.rssi > terms.rssi
+            })
         }
     }
 }
