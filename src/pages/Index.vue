@@ -4,35 +4,39 @@
             <q-toolbar>
                 <q-btn
                     v-if="activeClient"
-                    flat
-                    dense
-                    round
+                    flat dense round
                     icon="keyboard_arrow_left"
                     @click="deactivateGateway"
                 />
-                <q-toolbar-title v-if="!activeClient">Dashboard</q-toolbar-title>
-                <q-toolbar-title v-if="activeClient">{{ currentCfg.name }}</q-toolbar-title>
-                <q-circular-progress
-                    v-if="activeClient && !activeClientStatus"
-                    indeterminate
-                    dense
-                    size="20px"
-                    color="lime"
-                    class="q-mr-sm"
-                />
+                <q-toolbar-title v-if="!activeClient">
+                    Gateway List
+                </q-toolbar-title>
+                <q-toolbar-title v-if="activeClient">
+                    {{ currentCfg.name }}
+                    </q-toolbar-title>
+                <q-btn
+                    v-if="activeClient && activeClientPause"
+                    flat dense round
+                    icon="play_arrow"
+                    :loading="!activeClientStatus"
+                    @click="activeClientPause=false"
+                ><q-tooltip>Play</q-tooltip></q-btn>
+                <q-btn
+                    v-if="activeClient && !activeClientPause"
+                    flat dense round
+                    icon="pause"
+                    :loading="!activeClientStatus"
+                    @click="activeClientPause=true"
+                ><q-tooltip>Pause</q-tooltip></q-btn>
                 <q-btn
                     v-if="activeClient"
-                    flat
-                    dense
-                    round
+                    flat dense round
                     icon="receipt"
                     @click="browseMode='log'"
                 ><q-tooltip>Logs</q-tooltip></q-btn>
                 <q-btn
                     v-if="activeClient"
-                    flat
-                    dense
-                    round
+                    flat dense round
                     icon="style"
                     @click="browseMode='beacon'"
                 ><q-tooltip>Beacons</q-tooltip></q-btn>
@@ -58,6 +62,7 @@
                         :topic=gateway.topic
                         @selected="activateGateway"
                         @setting="launchGatewayCfg"
+                        @delete="deleteGateway"
                     ></gateway-card>
                 </div>
             </div>
@@ -65,9 +70,7 @@
                 v-else
                 class="text-center q-mt-lg text-grey-6 text-weight-bold"
                 style="font-size: 2.5rem;"
-            >
-                <div>No Gateway</div>
-            </div>
+            >No Gateway</div>
         </div>
         <gateway-cfg-dialog
             :cfg="currentCfg"
@@ -113,6 +116,8 @@ export default {
             currentCfgDialog: false,
             clients: {},
             activeClient: undefined,
+            activeClientStatus: false,
+            activeClientPause: false,
             logs: [],
             beacons: [],
             browseMode: 'log'
@@ -139,9 +144,16 @@ export default {
                 this.$set(this.currentCfg, 'topic', cfg.topic)
             }
         },
+        deleteGateway (name) {
+            const idx = this.gateways.findIndex(v => v.name === name)
+            if (idx >= 0) {
+                this.gateways.splice(idx, 1)
+            }
+        },
         activateGateway (name) {
             const me = this
             this.currentCfg = this.gateways.find(v => v.name === name)
+            this.activeClientPause = false
             this.activeClientStatus = false
             this.activeClient = mqtt.connect({
                 host: this.currentCfg.host,
@@ -152,11 +164,13 @@ export default {
                 me.activeClient.subscribe(me.currentCfg.topic)
             })
             this.activeClient.on('message', function (topic, payload) {
+                if (me.activeClientPause) { return }
                 me.updateBeacons(payload.toString())
                 if (me.logs.length === 100) { me.logs.pop() }
                 me.logs.splice(0, 0, { timestamp: moment(), message: payload.toString() })
             })
             this.activeClient.on('close', function () {
+                me.activeClientPause = false
                 me.activeClientStatus = false
             })
         },

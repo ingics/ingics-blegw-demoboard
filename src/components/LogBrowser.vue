@@ -8,6 +8,7 @@
             hide-bottom
             :grid="$q.screen.xs"
             :pagination.sync="pageOption"
+            class="q-pa-md"
         >
             <template v-slot:body-cell-message="props">
                 <q-td :props="props">
