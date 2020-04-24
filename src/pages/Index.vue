@@ -111,21 +111,7 @@ export default {
     },
     data () {
         return {
-            gateways: [
-                {
-                    name: 'IGS03M_3B_04',
-                    host: 'ingics.ddns.net',
-                    port: 2883,
-                    topic: 'testroom/IGS03M_3B_04',
-                    app: 'mqtt'
-                },
-                {
-                    name: 'IGS03M_33_44',
-                    host: '192.168.1.130',
-                    port: 8483,
-                    app: 'm2m'
-                }
-            ],
+            gateways: [],
             currentCfg: undefined,
             currentCfgKey: '',
             currentCfgDialog: false,
@@ -138,18 +124,23 @@ export default {
             browseMode: 'log'
         }
     },
+    mounted () {
+        const storedGateways = this.$q.localStorage.getItem('gateways')
+        if (storedGateways) { this.gateways = storedGateways }
+    },
     methods: {
         launchGatewayCfg (name) {
             this.currentCfg = this.gateways.find(v => v.name === name)
             this.currentCfgKey = name || 'new-gw-' + Math.random()
             this.currentCfgDialog = true
         },
-        applyGatewaySetting (gateway, cfg) {
+        applyGatewaySetting (gateway, cfg, flush = false) {
             this.$set(gateway, 'app', cfg.app)
             this.$set(gateway, 'name', cfg.name)
             this.$set(gateway, 'host', cfg.host)
             this.$set(gateway, 'port', cfg.port)
             this.$set(gateway, 'topic', cfg.topic)
+            if (flush) { this.$q.localStorage.set('gateways', this.gateways) }
         },
         saveGatewaySetting (cfg) {
             const me = this
@@ -157,16 +148,17 @@ export default {
                 const gw = {}
                 this.applyGatewaySetting(gw, cfg)
                 this.gateways.push(gw)
+                this.$q.localStorage.set('gateways', this.gateways)
             } else {
                 if (this.activeClient) {
                     this.activeClient.end(() => {
                         me.logs.splice(0, this.logs.length)
                         me.beacons.splice(0, this.beacons.length)
-                        me.applyGatewaySetting(this.currentCfg, cfg)
+                        me.applyGatewaySetting(this.currentCfg, cfg, true)
                         me.activateGateway(cfg.name)
                     })
                 } else {
-                    this.applyGatewaySetting(this.currentCfg, cfg)
+                    this.applyGatewaySetting(this.currentCfg, cfg, true)
                 }
             }
         },
@@ -174,6 +166,7 @@ export default {
             const idx = this.gateways.findIndex(v => v.name === name)
             if (idx >= 0) {
                 this.gateways.splice(idx, 1)
+                this.$q.localStorage.set('gateways', this.gateways)
             }
         },
         activateMqttGateway (name) {
