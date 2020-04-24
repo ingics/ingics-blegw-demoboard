@@ -40,6 +40,12 @@
                     icon="style"
                     @click="browseMode='beacon'"
                 ><q-tooltip>Beacons</q-tooltip></q-btn>
+                <q-btn
+                    v-if="activeClient"
+                    flat dense round
+                    icon="settings"
+                    @click="launchGatewayCfg(currentCfg.name)"
+                ><q-tooltip>Configuration</q-tooltip></q-btn>
             </q-toolbar>
         </q-header>
 
@@ -138,21 +144,30 @@ export default {
             this.currentCfgKey = name || 'new-gw-' + Math.random()
             this.currentCfgDialog = true
         },
+        applyGatewaySetting (gateway, cfg) {
+            this.$set(gateway, 'app', cfg.app)
+            this.$set(gateway, 'name', cfg.name)
+            this.$set(gateway, 'host', cfg.host)
+            this.$set(gateway, 'port', cfg.port)
+            this.$set(gateway, 'topic', cfg.topic)
+        },
         saveGatewaySetting (cfg) {
+            const me = this
             if (this.currentCfgKey.startsWith('new-gw-')) {
-                this.gateways.push({
-                    app: cfg.app,
-                    name: cfg.name,
-                    host: cfg.host,
-                    port: cfg.port,
-                    topic: cfg.topic
-                })
+                const gw = {}
+                this.applyGatewaySetting(gw, cfg)
+                this.gateways.push(gw)
             } else {
-                this.$set(this.currentCfg, 'app', cfg.app)
-                this.$set(this.currentCfg, 'name', cfg.name)
-                this.$set(this.currentCfg, 'host', cfg.host)
-                this.$set(this.currentCfg, 'port', cfg.port)
-                this.$set(this.currentCfg, 'topic', cfg.topic)
+                if (this.activeClient) {
+                    this.activeClient.end(() => {
+                        me.logs.splice(0, this.logs.length)
+                        me.beacons.splice(0, this.beacons.length)
+                        me.applyGatewaySetting(this.currentCfg, cfg)
+                        me.activateGateway(cfg.name)
+                    })
+                } else {
+                    this.applyGatewaySetting(this.currentCfg, cfg)
+                }
             }
         },
         deleteGateway (name) {
@@ -222,6 +237,7 @@ export default {
                 this.currentCfg = undefined
                 this.activeClient = undefined
                 this.logs.splice(0, this.logs.length)
+                this.beacons.splice(0, this.beacons.length)
             })
         },
         collectIngicsBeaconAttributes (tokens, parsed) {
