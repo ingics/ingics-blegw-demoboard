@@ -15,18 +15,22 @@
             <q-list>
                 <q-item>
                     <q-item-section>
-                    <q-item-label class="q-table__grid-item-title">Host</q-item-label>
-                    <q-item-label class="q-table__grid-item-value">{{ host }}</q-item-label>
+                        <q-item-label class="q-table__grid-item-title">Host</q-item-label>
+                        <q-item-label class="q-table__grid-item-value">{{ host }}</q-item-label>
                     </q-item-section>
                     <q-item-section>
-                    <q-item-label class="q-table__grid-item-title">Port</q-item-label>
-                    <q-item-label class="q-table__grid-item-value">{{ port }}</q-item-label>
+                        <q-item-label class="q-table__grid-item-title">Port</q-item-label>
+                        <q-item-label class="q-table__grid-item-value">{{ port }}</q-item-label>
                     </q-item-section>
                 </q-item>
                 <q-item>
                     <q-item-section>
-                    <q-item-label class="q-table__grid-item-title">Subscribe Topic</q-item-label>
-                    <q-item-label class="q-table__grid-item-value">{{ topic }}</q-item-label>
+                        <q-item-label class="q-table__grid-item-title">Protocol</q-item-label>
+                        <q-item-label class="q-table__grid-item-value">{{ app.toUpperCase() }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section  v-if="app == 'mqtt'">
+                        <q-item-label class="q-table__grid-item-title">Subscribe Topic</q-item-label>
+                        <q-item-label class="q-table__grid-item-value">{{ topic }}</q-item-label>
                     </q-item-section>
                 </q-item>
             </q-list>
@@ -57,8 +61,11 @@ export default {
             type: Number
         },
         topic: {
-            required: true,
             type: String
+        },
+        app: {
+            type: String,
+            require: true
         }
     },
     data () {

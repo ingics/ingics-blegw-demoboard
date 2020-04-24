@@ -66,7 +66,10 @@
                                         >Message</q-item-label>
                                         <q-item-label
                                             class="q-table__grid-item-value"
-                                        >{{ props.row.message }}</q-item-label>
+                                        >
+                                            {{ props.row.message }}
+                                            <q-tooltip>{{ props.row.payload }}</q-tooltip>
+                                        </q-item-label>
                                     </q-item-section>
                                 </q-item>
                             </q-list>

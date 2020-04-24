@@ -12,10 +12,11 @@
             <q-separator />
             <q-card-section>
                 <div>
+                    <q-select outlined label="Protocol" v-model="newApp" :options="apps" emit-value map-options />
                     <q-input outlined label="Name" v-model="newName" class="q-mb-xs" />
                     <q-input outlined label="Host" v-model="newHost" class="q-mb-xs" />
                     <q-input outlined label="Port" type="number" v-model.number="newPort" hide-bottom-space class="q-mb-xs" />
-                    <q-input outlined label="Subscribe Topic" v-model="newTopic" class="q-mb-xs" />
+                    <q-input v-if="newApp == 'mqtt'" outlined label="Subscribe Topic" v-model="newTopic" class="q-mb-xs" />
                 </div>
             </q-card-section>
             <q-separator />
@@ -45,9 +46,10 @@ export default {
             type: Object,
             default: () => {
                 return {
+                    app: 'mqtt',
                     name: '',
                     host: '',
-                    port: 3883,
+                    port: 1883,
                     topic: ''
                 }
             }
@@ -56,16 +58,27 @@ export default {
     data () {
         return {
             title: 'Gateway Configuration',
+            newApp: '',
             newName: '',
             newHost: '',
             newPort: 1883,
             newTopic: '',
-            dialogValue: false
+            dialogValue: false,
+            apps: [
+                {
+                    label: 'MQTT',
+                    value: 'mqtt'
+                }, {
+                    label: 'M2M',
+                    value: 'm2m'
+                }
+            ]
         }
     },
     mounted () {
         this.dialogValue = this.value
         this.title = this.cfg.name ? 'Gateway Configuration' : 'Add Gateway'
+        this.newApp = this.cfg.app
         this.newName = this.cfg.name
         this.newHost = this.cfg.host
         this.newPort = this.cfg.port
@@ -82,6 +95,7 @@ export default {
     methods: {
         saveSettings () {
             this.$emit('save', {
+                app: this.newApp,
                 name: this.newName,
                 host: this.newHost,
                 port: this.newPort,

@@ -60,6 +60,7 @@
                         :port=gateway.port
                         :protocol=gateway.protocol
                         :topic=gateway.topic
+                        :app=gateway.app
                         @selected="activateGateway"
                         @setting="launchGatewayCfg"
                         @delete="deleteGateway"
@@ -86,6 +87,7 @@
 </template>
 
 <script>
+import net from 'net'
 import mqtt from 'mqtt'
 import moment from 'moment'
 import { parseMessage } from '@ingics/message-parser'
@@ -108,7 +110,14 @@ export default {
                     name: 'IGS03M_3B_04',
                     host: 'ingics.ddns.net',
                     port: 2883,
-                    topic: 'testroom/IGS03M_3B_04'
+                    topic: 'testroom/IGS03M_3B_04',
+                    app: 'mqtt'
+                },
+                {
+                    name: 'IGS03M_33_44',
+                    host: '192.168.1.130',
+                    port: 8483,
+                    app: 'm2m'
                 }
             ],
             currentCfg: undefined,
@@ -132,12 +141,14 @@ export default {
         saveGatewaySetting (cfg) {
             if (this.currentCfgKey.startsWith('new-gw-')) {
                 this.gateways.push({
+                    app: cfg.app,
                     name: cfg.name,
                     host: cfg.host,
                     port: cfg.port,
                     topic: cfg.topic
                 })
             } else {
+                this.$set(this.currentCfg, 'app', cfg.app)
                 this.$set(this.currentCfg, 'name', cfg.name)
                 this.$set(this.currentCfg, 'host', cfg.host)
                 this.$set(this.currentCfg, 'port', cfg.port)
@@ -150,11 +161,8 @@ export default {
                 this.gateways.splice(idx, 1)
             }
         },
-        activateGateway (name) {
+        activateMqttGateway (name) {
             const me = this
-            this.currentCfg = this.gateways.find(v => v.name === name)
-            this.activeClientPause = false
-            this.activeClientStatus = false
             this.activeClient = mqtt.connect({
                 host: this.currentCfg.host,
                 port: this.currentCfg.port
@@ -173,6 +181,41 @@ export default {
                 me.activeClientPause = false
                 me.activeClientStatus = false
             })
+        },
+        activateM2mGateway () {
+            const me = this
+            this.activeClient = new net.Socket()
+            this.activeClient.on('connect', function () {
+                me.activeClientStatus = true
+            })
+            this.activeClient.on('close', function () {
+                me.activeClientStatus = false
+            })
+            this.activeClient.on('data', function (data) {
+                if (me.activeClientPause) { return }
+                const lines = data.toString().trim().split('\n')
+                lines.forEach(line => {
+                    me.updateBeacons(line)
+                    if (me.logs.length === 100) { me.logs.pop() }
+                    me.logs.splice(0, 0, { timestamp: moment(), message: line.trim() })
+                })
+            })
+            this.activeClient.on('timeout', function (data) {
+                // not sure what should i do
+                me.activeClient.close()
+                me.activeClient.connect(this.currentCfg.port, this.currentCfg.host)
+            })
+            this.activeClient.connect(this.currentCfg.port, this.currentCfg.host)
+        },
+        activateGateway (name) {
+            this.currentCfg = this.gateways.find(v => v.name === name)
+            this.activeClientPause = false
+            this.activeClientStatus = false
+            if (this.currentCfg.app === 'mqtt') {
+                this.activateMqttGateway()
+            } else if (this.currentCfg.app === 'm2m') {
+                this.activateM2mGateway()
+            }
         },
         deactivateGateway () {
             this.activeClient.end(() => {
