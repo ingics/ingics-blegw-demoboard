@@ -46,7 +46,11 @@
                                         >RSSI</q-item-label>
                                         <q-item-label
                                             class="q-table__grid-item-value"
-                                        >{{ props.row.rssi }}</q-item-label>
+                                        >
+                                            <transition name="slide-fade" mode="out-in">
+                                                <div :key="props.row.rssi">{{ props.row.rssi }}</div>
+                                            </transition>
+                                        </q-item-label>
                                     </q-item-section>
                                 </q-item>
                                 <q-item>
@@ -56,7 +60,11 @@
                                         >Last Update At</q-item-label>
                                         <q-item-label
                                             class="q-table__grid-item-value"
-                                        >{{ props.row.timestamp }}</q-item-label>
+                                        >
+                                            <transition name="slide-fade" mode="out-in">
+                                                <div :key="props.row.timestamp">{{ props.row.timestamp }}</div>
+                                            </transition>
+                                        </q-item-label>
                                     </q-item-section>
                                 </q-item>
                                 <q-item>
@@ -67,7 +75,11 @@
                                         <q-item-label
                                             class="q-table__grid-item-value"
                                         >
-                                            {{ props.row.message }}
+                                            <transition name="slide-fade" mode="out-in">
+                                                <div :key="props.row.message">
+                                                    {{ props.row.message }}
+                                                </div>
+                                            </transition>
                                             <q-tooltip>{{ props.row.payload }}</q-tooltip>
                                         </q-item-label>
                                     </q-item-section>
@@ -98,6 +110,20 @@
         </q-dialog>
     </div>
 </template>
+
+<style scoped>
+.slide-fade-enter-active {
+    transition: all .1s ease;
+}
+.slide-fade-leave-active {
+    transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active for <2.1.8 */ {
+    transform: translateX(3px);
+    opacity: 0;
+}
+</style>
 
 <script>
 import moment from 'moment'
