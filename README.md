@@ -7,6 +7,12 @@ Dashboard application for Ingics BLEGW demostration or testing
 npm install
 ```
 
+### Install quasar
+```bash
+npm install -g @quasar/cli
+```
+
+
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
 ```bash
 quasar dev -m electron
