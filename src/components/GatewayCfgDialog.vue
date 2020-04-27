@@ -96,10 +96,10 @@ export default {
         saveSettings () {
             this.$emit('save', {
                 app: this.newApp,
-                name: this.newName,
-                host: this.newHost,
+                name: this.newName.trim(),
+                host: this.newHost.trim(),
                 port: this.newPort,
-                topic: this.newTopic
+                topic: this.newTopic.trim()
             })
         }
     }
