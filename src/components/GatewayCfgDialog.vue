@@ -97,7 +97,7 @@ export default {
             this.$emit('save', {
                 app: this.newApp,
                 name: this.newName,
-                host: this.newHost,
+                host: this.newHost.trim(),
                 port: this.newPort,
                 topic: this.newTopic
             })
