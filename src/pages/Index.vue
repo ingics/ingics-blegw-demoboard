@@ -288,7 +288,7 @@ export default {
             return tokens.join(', ')
         },
         updateBeacons (payload) {
-            if (!payload.startsWith('$GPRP')) {
+            if (!payload.startsWith('$GPRP') && !payload.startsWith('$LRAD')) {
                 // take care beacon update for GPRP data only
                 // and only show beacon detail for ingics beacon & iBeacon
                 return
