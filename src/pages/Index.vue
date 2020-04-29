@@ -97,6 +97,7 @@ import net from 'net'
 import mqtt from 'mqtt'
 import moment from 'moment'
 import { parseMessage } from '@ingics/message-parser'
+import PayloadDesc from '../mixins/DescribePayload'
 import GatewayCard from '../components/GatewayCard'
 import GatewayCfgDialog from '../components/GatewayCfgDialog'
 import LogBrowser from '../components/LogBrowser'
@@ -124,6 +125,9 @@ export default {
             browseMode: 'log'
         }
     },
+    mixins: [
+        PayloadDesc
+    ],
     mounted () {
         const storedGateways = this.$q.localStorage.getItem('gateways')
         if (storedGateways) { this.gateways = storedGateways }
@@ -239,54 +243,6 @@ export default {
                 this.beacons.splice(0, this.beacons.length)
             })
         },
-        collectIngicsBeaconAttributes (tokens, parsed) {
-            function appendAttr (attr, cb) {
-                if (attr in parsed) {
-                    if (cb) {
-                        tokens.push(cb(parsed[attr]))
-                    } else {
-                        tokens.push(`${attr}: ${parsed[attr]}`)
-                    }
-                }
-            }
-            function appendEvent (event, cb) {
-                if (event in parsed.events) {
-                    if (cb) {
-                        tokens.push(cb(parsed.events[event]))
-                    } else {
-                        tokens.push(`${event}: ${parsed.events[event]}`)
-                    }
-                }
-            }
-            appendAttr('battery', e => `battery: ${e / 100}V`)
-            appendAttr('temperature', e => `temperature: ${e / 100}°C`)
-            appendAttr('humidity', e => `humidity: ${e}%`)
-            appendAttr('temperature_ext', e => `ext temperature: ${e / 100}°C`)
-            appendEvent('button')
-            appendEvent('moving')
-            appendEvent('hall')
-            appendEvent('fall')
-            appendEvent('detect')
-            appendEvent('matt')
-        },
-        collectPayloadMessage (data) {
-            const tokens = []
-            if ('parsedPayload' in data) {
-                const parsed = data.parsedPayload
-                const { mfg, type } = parsed
-                tokens.push(`${mfg} ${type || 'Unknown'}`)
-                if (mfg === 'Ingics') {
-                    this.collectIngicsBeaconAttributes(tokens, parsed)
-                } else if (mfg === 'Apple' && type === 'iBeacon') {
-                    const { uuid, major, minor, tx } = parsed
-                    tokens.push(`uuid: ${uuid.toLocaleUpperCase()}`)
-                    tokens.push(`major: ${major}`)
-                    tokens.push(`minor: ${minor}`)
-                    tokens.push(`tx power: ${tx}`)
-                }
-            }
-            return tokens.join(', ')
-        },
         updateBeacons (payload) {
             if (!payload.startsWith('$GPRP') && !payload.startsWith('$LRAD')) {
                 // take care beacon update for GPRP data only
@@ -299,8 +255,8 @@ export default {
                         mac: data.beacon,
                         rssi: data.rssi,
                         payload: data.payload,
-                        message: this.collectPayloadMessage(data),
-                        timestamp: moment()
+                        message: this.payloadDescription(data.parsedPayload) || 'Failed to parse payload',
+                        timestamp: moment().valueOf()
                     }
                     // const idx = this.beacons.findIndex(v => v.mac === beacon.mac)
                     // if (idx >= 0) { this.beacons.splice(idx, 1) }

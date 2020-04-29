@@ -62,7 +62,7 @@
                                             class="q-table__grid-item-value"
                                         >
                                             <transition name="slide-fade" mode="out-in">
-                                                <div :key="props.row.timestamp">{{ props.row.timestamp }}</div>
+                                                <div :key="props.row.timestamp">{{ formatTimestamp(props.row.timestamp) }}</div>
                                             </transition>
                                         </q-item-label>
                                     </q-item-section>
@@ -160,7 +160,7 @@ export default {
                     label: 'Last Update',
                     align: 'left',
                     field: row => row.timestamp,
-                    format: val => `${moment(val).format('L LTS')}`,
+                    // format: val => `${moment(val).format('L LTS')}`,
                     sortable: false
                 },
                 {
@@ -192,6 +192,9 @@ export default {
                      row.message.toLowerCase().indexOf(s) !== -1) &&
                     row.rssi > terms.rssi
             })
+        },
+        formatTimestamp (val) {
+            return moment(val).format('L LTS')
         }
     }
 }
