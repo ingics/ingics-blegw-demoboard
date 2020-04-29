@@ -29,13 +29,13 @@
                     @click="activeClientPause=true"
                 ><q-tooltip>Pause</q-tooltip></q-btn>
                 <q-btn
-                    v-if="activeClient"
+                    v-if="activeClient && browseMode=='beacon'"
                     flat dense round
                     icon="receipt"
                     @click="browseMode='log'"
                 ><q-tooltip>Logs</q-tooltip></q-btn>
                 <q-btn
-                    v-if="activeClient"
+                    v-if="activeClient && browseMode=='log'"
                     flat dense round
                     icon="style"
                     @click="browseMode='beacon'"
