@@ -7,6 +7,8 @@
 // https://quasar.dev/quasar-cli/quasar-conf-js
 /* eslint-env node */
 
+const execSync = require('child_process').execSync
+
 module.exports = function (/* ctx */) {
   return {
     // app boot file (/src/boot)
@@ -68,7 +70,11 @@ module.exports = function (/* ctx */) {
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
-
+      env: {
+        APP_VERSION: JSON.stringify(require('./package.json').version),
+        APP_HASH: JSON.stringify(execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim()),
+        ELECTRON_VERSION: JSON.stringify(require('./node_modules/electron/package.json').version)
+      },
       // rtl: false, // https://quasar.dev/options/rtl-support
       // showProgress: false,
       // gzip: true,

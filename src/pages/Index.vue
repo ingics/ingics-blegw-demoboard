@@ -46,6 +46,11 @@
                     icon="settings"
                     @click="launchGatewayCfg(currentCfg.name)"
                 ><q-tooltip>Configuration</q-tooltip></q-btn>
+                <q-btn
+                    flat dense round
+                    icon="info"
+                    @click="aboutDialog = true"
+                ></q-btn>
             </q-toolbar>
         </q-header>
 
@@ -89,10 +94,27 @@
         </q-page-sticky>
         <log-browser v-if="activeClient && browseMode=='log'" :logs="logs" />
         <beacon-browser v-if="activeClient && browseMode=='beacon'" :beacons="beacons" />
+        <q-dialog v-model="aboutDialog">
+            <q-card :style="{minWidth: '30vw'}">
+                <q-card-section>
+                    <q-item-section>
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label>Version: {{ appVersion }}</q-item-label>
+                        <q-item-label>Commit: {{ appHash }}</q-item-label>
+                        <q-item-label>NodeJS: {{ nodejsVersion }}</q-item-label>
+                        <q-item-label>Vue: {{ vueVersion }}</q-item-label>
+                        <q-item-label>Quasar: {{ $q.version }}</q-item-label>
+                        <q-item-label>Electron: {{ electronVersion }}</q-item-label>
+                    </q-item-section>
+                </q-card-section>
+            </q-card>
+        </q-dialog>
     </q-page>
 </template>
 
 <script>
+import Vue from 'vue'
 import net from 'net'
 import mqtt from 'mqtt'
 import moment from 'moment'
@@ -122,7 +144,8 @@ export default {
             activeClientPause: false,
             logs: [],
             beacons: [],
-            browseMode: 'log'
+            browseMode: 'log',
+            aboutDialog: false
         }
     },
     mixins: [
@@ -273,6 +296,13 @@ export default {
                 })
             } catch {}
         }
+    },
+    computed: {
+        appHash: () => process.env.APP_HASH,
+        appVersion: () => process.env.APP_VERSION,
+        electronVersion: () => process.env.ELECTRON_VERSION,
+        vueVersion: () => Vue.version,
+        nodejsVersion: () => process.version
     }
 }
 </script>

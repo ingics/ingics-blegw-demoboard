@@ -2,6 +2,7 @@
   "name": "ingics-blegw-demoboard",
   "version": "0.0.1",
   "description": "Dashboard application for Ingics BLEGW demostration or testing",
+  "repository": "github:ingics/ingics-blegw-demoboard",
   "productName": "Ingics BLE-GW Demo Board",
   "cordovaId": "com.ingics.blegw.demoboard",
   "capacitorId": "",
