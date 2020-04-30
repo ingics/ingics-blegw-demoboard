@@ -102,7 +102,7 @@
                             :min="-125"
                             :max="0"
                             label
-                            :label-value="'RSSI throughold ' + filter.rssi"
+                            :label-value="'RSSI threshold ' + filter.rssi"
                         />
                     </q-item-section>
                 </q-item>
