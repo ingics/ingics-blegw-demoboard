@@ -32,7 +32,7 @@ function createWindow () {
       // More info: /quasar-cli/developing-electron-apps/electron-preload-script
       // preload: path.resolve(__dirname, 'electron-preload.js')
     },
-    icon: require('path').join(__dirname, '../icons/icon.png')
+    icon: app.isPackaged ? require('path').join(process.resourcesPath, 'icon.png') : require('path').join(__dirname, '../icons/icon.png')
   })
 
   mainWindow.removeMenu()

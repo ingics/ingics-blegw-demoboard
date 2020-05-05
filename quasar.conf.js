@@ -120,7 +120,7 @@ module.exports = function (/* ctx */) {
       workboxOptions: {}, // only for GenerateSW
       manifest: {
         name: 'Ingics BLE-GW Demo Board',
-        short_name: 'Ingics BLE-GW Demo Board',
+        short_name: 'DemoBoard',
         description: 'Dashboard application for Ingics BLEGW demostration or testing',
         display: 'standalone',
         orientation: 'portrait',
@@ -169,7 +169,7 @@ module.exports = function (/* ctx */) {
 
     // Full list of options: https://quasar.dev/quasar-cli/developing-electron-apps/configuring-electron
     electron: {
-      bundler: 'packager', // 'packager' or 'builder'
+      bundler: 'builder', // 'packager' or 'builder'
 
       packager: {
         // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
@@ -187,7 +187,25 @@ module.exports = function (/* ctx */) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'ingics-blegw-demoboard'
+        appId: 'ingics-blegw-demoboard',
+        linux: {
+          executableName: 'DemoBoard',
+          target: ['AppImage']
+        },
+        win: {
+          target: [
+            {
+              target: 'portable',
+              arch: ['x64']
+            }
+          ]
+        },
+        extraResources: [
+          {
+            from: 'src-electron/icons/linux-32x32.png',
+            to: 'icon.png'
+          }
+        ]
       },
 
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration
