@@ -1,4 +1,4 @@
-# Ingics BLE-GW Demo Board (ingics-blegw-demoboard)
+# Ingics BLE-GW Demo Board
 > Dashboard application for Ingics BLEGW demostration or testing
 
 ![](../assets/screenshot-gwcfg.png)
@@ -7,9 +7,11 @@
 ## Installation
 
 Linux:
+
 The application will be released in appImage (https://appimage.org/) format for Linux, you can simply execute the file from console or desktop GUI. The application will be tested on Ubuntu 18.04.
 
 Windows:
+
 The application will be released as a portable app file (without installer) for Windows. The application will be tested on Windows 10.
 
 ## Usage
