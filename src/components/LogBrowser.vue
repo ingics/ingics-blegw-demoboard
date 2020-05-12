@@ -12,10 +12,13 @@
         >
             <template v-slot:body-cell-message="props">
                 <q-td :props="props">
-                    <div>
+                    <div v-if="$q.screen.gt.sm">
+                        {{ props.row.message }}
+                    </div>
+                    <div v-if="$q.screen.lt.md">
                         {{ props.row.message.split(',').slice(0,4).join(',') }}
                     </div>
-                    <div>
+                    <div v-if="$q.screen.lt.md">
                         {{ props.row.message.split(',').slice(-1)[0] }}
                     </div>
                 </q-td>

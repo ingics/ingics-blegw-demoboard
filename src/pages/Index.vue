@@ -93,7 +93,7 @@
             <q-btn fab icon="add" color="accent" @click="launchGatewayCfg(null)" />
         </q-page-sticky>
         <log-browser v-if="activeClient && browseMode=='log'" :logs="logs" />
-        <beacon-browser v-if="activeClient && browseMode=='beacon'" :beacons="beacons" />
+        <beacon-browser v-if="activeClient && browseMode=='beacon'" :beacons="beacons" @beacon-refresh="refreshBeacons" />
         <q-dialog v-model="aboutDialog">
             <q-card :style="{minWidth: '30vw'}">
                 <q-card-section>
@@ -295,6 +295,9 @@ export default {
                     }
                 })
             } catch {}
+        },
+        refreshBeacons () {
+            this.beacons.splice(0, this.beacons.length)
         }
     },
     computed: {

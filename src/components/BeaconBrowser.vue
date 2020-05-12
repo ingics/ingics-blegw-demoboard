@@ -6,11 +6,22 @@
             :columns="columns"
             hide-bottom
             :filter="filter"
-            :grid="!$q.screen.gt.md"
+            grid
             :pagination.sync="pageOption"
             class="q-pa-md"
             :filter-method="doFilter"
         >
+            <template v-slot:top>
+                <p class="adjust-center">
+                    <span class="q-table__title">Beacon</span>
+                    <q-btn
+                        flat dense round
+                        icon="refresh"
+                        color="primary"
+                        @click="$emit('beacon-refresh')"
+                    ><q-tooltip>Refresh</q-tooltip></q-btn>
+                </p>
+            </template>
             <template v-slot:top-right>
                 <q-input
                     outlined borderless dense debounce="300"
@@ -27,64 +38,64 @@
                 ><q-tooltip>Filter</q-tooltip></q-btn>
             </template>
             <template v-slot:item="props">
-                <div class="q-pa-sm col-xs-12 col-sm-6 col-md-4">
+                <div class="q-pa-xs col-12">
                     <q-card>
-                        <q-card-section>
-                            <q-list>
-                                <q-item>
-                                    <q-item-section>
+                        <q-card-section class="row">
+                            <q-item class="col-6 col-sm-4 col-md-2">
+                                <q-item-section>
                                         <q-item-label
                                             class="q-table__grid-item-title"
                                         >MAC</q-item-label>
                                         <q-item-label
                                             class="q-table__grid-item-value"
                                         >{{ props.row.mac }}</q-item-label>
-                                    </q-item-section>
-                                    <q-item-section>
-                                        <q-item-label
-                                            class="q-table__grid-item-title"
-                                        >RSSI</q-item-label>
-                                        <q-item-label
-                                            class="q-table__grid-item-value"
-                                        >
-                                            <transition name="slide-fade" mode="out-in">
-                                                <div :key="props.row.rssi">{{ props.row.rssi }}</div>
-                                            </transition>
-                                        </q-item-label>
-                                    </q-item-section>
-                                </q-item>
-                                <q-item>
-                                    <q-item-section>
-                                        <q-item-label
-                                            class="q-table__grid-item-title"
-                                        >Last Update At</q-item-label>
-                                        <q-item-label
-                                            class="q-table__grid-item-value"
-                                        >
-                                            <transition name="slide-fade" mode="out-in">
-                                                <div :key="props.row.timestamp">{{ formatTimestamp(props.row.timestamp) }}</div>
-                                            </transition>
-                                        </q-item-label>
-                                    </q-item-section>
-                                </q-item>
-                                <q-item>
-                                    <q-item-section>
-                                        <q-item-label
-                                            class="q-table__grid-item-title"
-                                        >Message</q-item-label>
-                                        <q-item-label
-                                            class="q-table__grid-item-value"
-                                        >
-                                            <transition name="slide-fade" mode="out-in">
-                                                <div :key="props.row.message">
-                                                    {{ props.row.message }}
-                                                </div>
-                                            </transition>
-                                            <q-tooltip>{{ props.row.payload }}</q-tooltip>
-                                        </q-item-label>
-                                    </q-item-section>
-                                </q-item>
-                            </q-list>
+                                </q-item-section>
+                            </q-item>
+                            <q-item class="col-6 col-sm-3 col-md-1">
+                                <q-item-section>
+                                    <q-item-label
+                                        class="q-table__grid-item-title"
+                                    >RSSI</q-item-label>
+                                    <q-item-label
+                                        class="q-table__grid-item-value"
+                                    >
+                                        <transition name="slide-fade" mode="out-in">
+                                            <div :key="props.row.rssi">{{ props.row.rssi }}</div>
+                                        </transition>
+                                    </q-item-label>
+                                </q-item-section>
+                            </q-item>
+                            <q-item class="col-12 col-sm-5 col-md-3">
+                                <q-item-section>
+                                    <q-item-label
+                                        class="q-table__grid-item-title"
+                                    >Last Update At</q-item-label>
+                                    <q-item-label
+                                        class="q-table__grid-item-value"
+                                    >
+                                        <transition name="slide-fade" mode="out-in">
+                                            <div :key="props.row.timestamp">{{ formatTimestamp(props.row.timestamp) }}</div>
+                                        </transition>
+                                    </q-item-label>
+                                </q-item-section>
+                            </q-item>
+                            <q-item class="col-12 col-sm-12 col-md-6">
+                                <q-item-section>
+                                    <q-item-label
+                                        class="q-table__grid-item-title"
+                                    >Message</q-item-label>
+                                    <q-item-label
+                                        class="q-table__grid-item-value"
+                                    >
+                                        <transition name="slide-fade" mode="out-in">
+                                            <div :key="props.row.message">
+                                                {{ props.row.message }}
+                                            </div>
+                                        </transition>
+                                        <q-tooltip>{{ props.row.payload }}</q-tooltip>
+                                    </q-item-label>
+                                </q-item-section>
+                            </q-item>
                         </q-card-section>
                     </q-card>
                 </div>
