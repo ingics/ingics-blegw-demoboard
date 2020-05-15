@@ -11,7 +11,7 @@
             class="q-pa-md"
             :filter-method="doFilter"
         >
-            <template v-slot:top>
+            <template v-slot:top-left>
                 <p class="adjust-center">
                     <span class="q-table__title">Beacon</span>
                     <q-btn
