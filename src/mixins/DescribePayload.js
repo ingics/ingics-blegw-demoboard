@@ -1,47 +1,47 @@
 import isNil from 'lodash/isNil'
 export default {
     methods: {
-        appendIngicsAttr (tokens, parsedData, attr, cb) {
-            if (attr in parsedData) {
+        appendIngicsAttr (tokens, msd, attr, cb) {
+            if (attr in msd) {
                 if (cb) {
-                    tokens.push(cb(parsedData[attr]))
+                    tokens.push(cb(msd[attr]))
                 } else {
-                    tokens.push(`${attr}: ${parsedData[attr]}`)
+                    tokens.push(`${attr}: ${msd[attr]}`)
                 }
             }
         },
-        appendIngicsEvent (tokens, parsedData, event, cb) {
-            if (event in parsedData.events) {
+        appendIngicsEvent (tokens, msd, event, cb) {
+            if (event in msd.events) {
                 if (cb) {
-                    tokens.push(cb(parsedData.events[event]))
+                    tokens.push(cb(msd.events[event]))
                 } else {
-                    tokens.push(`${event}: ${parsedData.events[event]}`)
+                    tokens.push(`${event}: ${msd.events[event]}`)
                 }
             }
         },
-        collectIngicsBeaconAttributes (tokens, parsedData) {
-            this.appendIngicsAttr(tokens, parsedData, 'battery', e => `battery: ${e / 100}V`)
-            this.appendIngicsAttr(tokens, parsedData, 'temperature', e => `temperature: ${e / 100}°C`)
-            this.appendIngicsAttr(tokens, parsedData, 'humidity', e => `humidity: ${e}%`)
-            this.appendIngicsAttr(tokens, parsedData, 'temperature_ext', e => `ext temperature: ${e / 100}°C`)
-            this.appendIngicsEvent(tokens, parsedData, 'button')
-            this.appendIngicsEvent(tokens, parsedData, 'moving')
-            this.appendIngicsEvent(tokens, parsedData, 'hall')
-            this.appendIngicsEvent(tokens, parsedData, 'fall')
-            this.appendIngicsEvent(tokens, parsedData, 'detect')
-            this.appendIngicsEvent(tokens, parsedData, 'matt')
+        collectIngicsBeaconAttributes (tokens, msd) {
+            this.appendIngicsAttr(tokens, msd, 'battery', e => `battery: ${e}V`)
+            this.appendIngicsAttr(tokens, msd, 'temperature', e => `temperature: ${e}°C`)
+            this.appendIngicsAttr(tokens, msd, 'humidity', e => `humidity: ${e}%`)
+            this.appendIngicsAttr(tokens, msd, 'temperatureExt', e => `ext temperature: ${e}°C`)
+            this.appendIngicsEvent(tokens, msd, 'button')
+            this.appendIngicsEvent(tokens, msd, 'moving')
+            this.appendIngicsEvent(tokens, msd, 'hall')
+            this.appendIngicsEvent(tokens, msd, 'fall')
+            this.appendIngicsEvent(tokens, msd, 'detect')
+            this.appendIngicsEvent(tokens, msd, 'matt')
         },
-        payloadDescription (parsedData) {
+        payloadDescription (msd) {
             const tokens = []
-            if (!isNil(parsedData)) {
-                const { mfg, type } = parsedData
-                if (mfg === 'Ingics') {
-                    tokens.push(`${mfg} ${type || 'Unknown'}`)
-                    this.collectIngicsBeaconAttributes(tokens, parsedData)
-                } else if (mfg === 'Apple' && type === 'iBeacon') {
-                    tokens.push(`${mfg} ${type}`)
-                    const { uuid, major, minor, tx } = parsedData
-                    tokens.push(`uuid: ${uuid.toLocaleUpperCase()}`)
+            if (!isNil(msd)) {
+                const { company, type } = msd
+                if (msd.is('ingics')) {
+                    tokens.push(`${company} ${type || 'Unknown'}`)
+                    this.collectIngicsBeaconAttributes(tokens, msd)
+                } else if (msd.is('ibeacon')) {
+                    tokens.push(`${company} ${type}`)
+                    const { uuid, major, minor, tx } = msd
+                    tokens.push(`uuid: ${uuid}`)
                     tokens.push(`major: ${major}`)
                     tokens.push(`minor: ${minor}`)
                     tokens.push(`tx power: ${tx}`)

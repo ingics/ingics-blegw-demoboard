@@ -277,8 +277,8 @@ export default {
                     const beacon = {
                         mac: data.beacon,
                         rssi: data.rssi,
-                        payload: data.payload,
-                        message: this.payloadDescription(data.parsedPayload) || 'Failed to parse payload',
+                        payload: data.advertisement.raw.toString('hex').toUpperCase(),
+                        message: this.payloadDescription(data.advertisement.manufacturerData) || 'Failed to parse payload',
                         timestamp: moment().valueOf()
                     }
                     // const idx = this.beacons.findIndex(v => v.mac === beacon.mac)
@@ -294,7 +294,7 @@ export default {
                         this.beacons.push(beacon)
                     }
                 })
-            } catch {}
+            } catch (err) { console.log(err) }
         },
         refreshBeacons () {
             this.beacons.splice(0, this.beacons.length)
