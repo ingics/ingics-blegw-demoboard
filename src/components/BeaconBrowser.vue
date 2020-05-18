@@ -66,134 +66,7 @@
                 </q-tr>
                 <q-tr v-show="props.expand" :props="props">
                     <q-td colspan="100%">
-                        <div class="text-left">
-                            Advertisement: {{ props.row.ad.raw }}
-                            <div v-if="props.row.ad.flags">
-                                Flags: {{ '0x' + props.row.ad.flags.toString(16) }}
-                            </div>
-                            <div v-if="props.row.ad.localName">
-                                Local Name: {{ props.row.ad.localName }}
-                            </div>
-                            <div v-if="props.row.ad.txPowerLevel">
-                                Tx Power Level: {{ props.row.ad.txPowerLevel }}
-                            </div>
-                            <div v-if="props.row.ad.temperature">
-                                Temperature:
-                                {{ props.row.ad.temperature }}
-                                {{ props.row.ad.temperatureUnit }}
-                            </div>
-                            <div v-if="props.row.ad.humidity">
-                                Humidity: {{ props.row.ad.humidity }}%
-                            </div>
-                            <div v-if="props.row.ad.objectId">
-                                Object ID: {{ props.row.ad.objectId }}
-                            </div>
-                            <div v-if="props.row.ad.appearance">
-                                Appearance: {{ props.row.ad.appearance }}
-                            </div>
-                            <div
-                                v-for="d in props.row.ad.serviceData"
-                                :key="d.uuid"
-                                >
-                                Service Data:
-                                UUID 0x{{ d.uuid.toString(16).toUpperCase() }}
-                                Data 0x{{ d.data.toString('hex').toUpperCase() }}
-                            </div>
-                            <div
-                                v-for="d in props.row.ad.serviceUuids"
-                                :key="d"
-                            >
-                                Service UUID: {{ d }}
-                            </div>
-                            <div v-if="props.row.ad.msd">
-                                <div v-if="props.row.ad.msd.company">
-                                    Company: {{ props.row.ad.msd.company }}
-                                </div>
-                                <div v-if="props.row.ad.msd.type">
-                                    Type: {{ props.row.ad.msd.type }}
-                                </div>
-                                <!-- Ingics IBSXX -->
-                                <div v-if="props.row.ad.msd.battery">
-                                    Battery: {{ props.row.ad.msd.battery }}V
-                                </div>
-                                <div v-if="props.row.ad.msd.temperature">
-                                    Temperature: {{ props.row.ad.msd.temperature }}°C
-                                </div>
-                                <div v-if="props.row.ad.msd.temperatureExt">
-                                    External Temperature: {{ props.row.ad.msd.temperatureExt }}°C
-                                </div>
-                                <div v-if="props.row.ad.msd.humidity">
-                                    Humidity: {{ props.row.ad.msd.humidity }}%
-                                </div>
-                                <div v-if="props.row.ad.msd.events">
-                                    Events:
-                                    <transition name="slide-fade" mode="out-in">
-                                        <span :key="props.row.ad.msd.eventFlag">
-                                            0x{{ props.row.ad.msd.eventFlag.toString(16) }}
-                                        </span>
-                                    </transition>
-                                </div>
-                                <div v-if="props.row.ad.msd.accel">
-                                    Accelerometer:
-                                    <transition name="slide-fade" mode="out-in">
-                                        <span :key="props.row.ad.msd.accel.toString()">
-                                            x {{ props.row.ad.msd.accel.x }},
-                                            y {{ props.row.ad.msd.accel.y }},
-                                            z {{ props.row.ad.msd.accel.z }}
-                                        </span>
-                                    </transition>
-                                </div>
-                                <div v-if="props.row.ad.msd.accels">
-                                    Accelerometer:
-                                    <transition name="slide-fade" mode="out-in">
-                                        <span :key="props.row.ad.msd.accels[0].toString()">
-                                            x {{ props.row.ad.msd.accels[0].x }},
-                                            y {{ props.row.ad.msd.accels[0].y }},
-                                            z {{ props.row.ad.msd.accels[0].z }}
-                                        </span>
-                                    </transition>
-                                </div>
-                                <!-- iBeacon -->
-                                <div v-if="props.row.ad.msd.uuid">
-                                    UUID: {{ props.row.ad.msd.uuid }}
-                                </div>
-                                <div v-if="props.row.ad.msd.major">
-                                    Major: {{ props.row.ad.msd.major }}
-                                </div>
-                                <div v-if="props.row.ad.msd.minor">
-                                    Minor: {{ props.row.ad.msd.minor }}
-                                </div>
-                                <div v-if="props.row.ad.msd.tx">
-                                    Tx Power: {{ props.row.ad.msd.tx }}
-                                </div>
-                                <!-- Microsoft -->
-                                <div v-if="props.row.ad.msd.scenario">
-                                    Scenario: {{ props.row.ad.msd.scenario }}
-                                </div>
-                                <div v-if="props.row.ad.msd.slat">
-                                    Slat: {{ props.row.ad.msd.slat }}
-                                </div>
-                                <div v-if="props.row.ad.msd.deviceHash">
-                                    Device Hash: {{ props.row.ad.msd.deviceHash }}
-                                </div>
-                                <!-- altBeacon -->
-                                <div v-if="props.row.ad.msd.id">
-                                    Device ID: {{ props.row.ad.msd.id }}
-                                </div>
-                                <div v-if="props.row.ad.msd.refrssi">
-                                    Reference RSSI: {{ props.row.ad.msd.refrssi }}
-                                </div>
-                                <div v-if="props.row.ad.msd.mfgReserved">
-                                    MFG Reserved: {{ props.row.ad.msd.mfgReserved }}
-                                </div>
-                                Manufacture Data:
-                                <transition name="slide-fade" mode="out-in">
-                                    <span :key="props.row.ad.msd.raw">
-                                        {{ props.row.ad.msd.raw }}
-                                    </span>
-                                </transition>
-                            </div>
-                        </div>
+                        <advertisement :ad="props.row.ad" />
                     </q-td>
                 </q-tr>
             </template>
@@ -235,12 +108,16 @@
 
 <script>
 import moment from 'moment'
+import Advertisement from './Advertisement'
 export default {
     props: {
         beacons: {
             type: Array,
             required: true
         }
+    },
+    components: {
+        Advertisement
     },
     data () {
         return {
