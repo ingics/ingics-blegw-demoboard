@@ -11,7 +11,7 @@
             class="q-pa-md"
         >
             <template v-slot:body-cell-message="props">
-                <q-td :props="props">
+                <q-td :props="props" @click="selectLog(props.row.message)">
                     <div v-if="$q.screen.gt.sm">
                         {{ props.row.message }}
                     </div>
@@ -25,11 +25,23 @@
             </template>
         </q-table>
         <q-resize-observer @resize="onResize" />
+        <q-dialog v-model="detailDialog" v-if="selectedLog">
+            <q-card class="q-pa-md" :style="{minWidth: '80vw'}">
+                <div>Beacon: {{ selectedLog.beacon }}</div>
+                <div>Gateway: {{ selectedLog.gateway }}</div>
+                <div>RSSI: {{ selectedLog.rssi }}</div>
+                <div>Timestamp: {{ selectedLog.timestamp }}</div>
+                <advertisement :ad="selectedLog.advertisement" />
+            </q-card>
+        </q-dialog>
     </div>
 </template>
 
 <script>
 import moment from 'moment'
+import AdvUtils from '../mixins/AdvUtils'
+import Advertisement from './Advertisement'
+import { parseMessage } from '@ingics/message-parser'
 export default {
     // name: 'LogBrowser',
     props: {
@@ -38,6 +50,12 @@ export default {
             required: true
         }
     },
+    components: {
+        Advertisement
+    },
+    mixins: [
+        AdvUtils
+    ],
     data () {
         return {
             columns: [
@@ -62,7 +80,9 @@ export default {
             ],
             pageOption: {
                 rowsPerPage: 0
-            }
+            },
+            detailDialog: false,
+            selectedLog: undefined
         }
     },
     methods: {
@@ -85,6 +105,18 @@ export default {
         onResize (size) {
             this.reportSize = size
             this.linewrapPoint = size.width / 9
+        },
+        selectLog (message) {
+            parseMessage(message, data => {
+                this.selectedLog = {
+                    beacon: data.beacon,
+                    gateway: data.gateway,
+                    timestamp: moment(data.timestamp).format('L LTS'),
+                    rssi: data.rssi,
+                    advertisement: this.advPreprocessing(data.advertisement)
+                }
+                this.detailDialog = true
+            })
         }
     }
 }
