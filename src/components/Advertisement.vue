@@ -65,6 +65,9 @@
                         0x{{ ad.msd.eventFlag.toString(16) }}
                     </span>
                 </transition>
+                <span v-if="ad.msd.eventFlag != 0">
+                    ({{ eventList(ad.msd.events) }})
+                </span>
             </div>
             <div v-if="ad.msd.accel">
                 Accelerometer:
@@ -146,6 +149,18 @@
 <script>
 export default {
     name: 'Advertisement',
-    props: ['ad']
+    props: ['ad'],
+    methods: {
+        eventList (events) {
+            const ans = []
+            const eventNames = ['button', 'moving', 'hall', 'fall', 'detect', 'matt']
+            eventNames.forEach(e => {
+                if (e in events && events[e]) {
+                    ans.push(e)
+                }
+            })
+            return ans.join(', ')
+        }
+    }
 }
 </script>
