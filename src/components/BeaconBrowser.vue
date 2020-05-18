@@ -67,7 +67,7 @@
                 <q-tr v-show="props.expand" :props="props">
                     <q-td colspan="100%">
                         <div class="text-left">
-                            Advertisement: {{ props.row.ad.raw.toString('hex').toUpperCase() }}
+                            Advertisement: {{ props.row.ad.raw }}
                             <div v-if="props.row.ad.flags">
                                 Flags: {{ '0x' + props.row.ad.flags.toString(16) }}
                             </div>
@@ -188,8 +188,8 @@
                                 </div>
                                 Manufacture Data:
                                 <transition name="slide-fade" mode="out-in">
-                                    <span :key="props.row.ad.msd.raw.toString('hex')">
-                                        {{ props.row.ad.msd.raw.toString('hex').toUpperCase() }}
+                                    <span :key="props.row.ad.msd.raw">
+                                        {{ props.row.ad.msd.raw }}
                                     </span>
                                 </transition>
                             </div>
@@ -298,16 +298,16 @@ export default {
     },
     methods: {
         doFilter (rows, terms, cols, getCellValue) {
-            const s = terms.search.toLowerCase()
+            const s = terms.search.toUpperCase()
             return rows.filter(row => {
                 if (row === false) return false
                 const ad = row.ad
                 const msd = row.ad.msd
                 return (
-                    row.mac.toLowerCase().indexOf(s) !== -1 ||
-                    ad.raw.toString('hex').toLowerCase().indexOf(s) !== -1 ||
-                    (msd && msd.company && msd.company.toLowerCase().indexOf(s) !== -1) ||
-                    (msd && msd.type && msd.type.toLowerCase().indexOf(s) !== -1)
+                    row.mac.toUpperCase().indexOf(s) !== -1 ||
+                    ad.raw.indexOf(s) !== -1 ||
+                    (msd && msd.company && msd.company.toUpperCase().indexOf(s) !== -1) ||
+                    (msd && msd.type && msd.type.toUpperCase().indexOf(s) !== -1)
                 ) && row.rssi > terms.rssi
             })
         }

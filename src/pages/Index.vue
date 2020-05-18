@@ -272,8 +272,13 @@ export default {
             try {
                 parseMessage(payload, data => {
                     const old = this.beacons.find(v => v.mac === data.beacon)
+                    // pre-processing
                     data.advertisement.msd = data.advertisement.manufacturerData
                     delete data.advertisement.manufacturerData
+                    data.advertisement.raw = data.advertisement.raw.toString('hex').toUpperCase()
+                    if (data.advertisement.msd) {
+                        data.advertisement.msd.raw = data.advertisement.msd.raw.toString('hex').toUpperCase()
+                    }
                     if (old) {
                         this.$set(old, 'rssi', data.rssi)
                         this.$set(old, 'timestamp', data.timestamp)
