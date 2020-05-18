@@ -119,7 +119,6 @@ import net from 'net'
 import mqtt from 'mqtt'
 import moment from 'moment'
 import { parseMessage } from '@ingics/message-parser'
-import PayloadDesc from '../mixins/DescribePayload'
 import GatewayCard from '../components/GatewayCard'
 import GatewayCfgDialog from '../components/GatewayCfgDialog'
 import LogBrowser from '../components/LogBrowser'
@@ -148,9 +147,6 @@ export default {
             aboutDialog: false
         }
     },
-    mixins: [
-        PayloadDesc
-    ],
     mounted () {
         const storedGateways = this.$q.localStorage.getItem('gateways')
         if (storedGateways) { this.gateways = storedGateways }
