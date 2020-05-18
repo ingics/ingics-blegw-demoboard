@@ -267,31 +267,28 @@ export default {
             })
         },
         updateBeacons (payload) {
-            if (!payload.startsWith('$GPRP') && !payload.startsWith('$LRAD')) {
-                // take care beacon update for GPRP data only
-                // and only show beacon detail for ingics beacon & iBeacon
+            if (!payload.startsWith('$GPRP') &&
+                !payload.startsWith('$LRAD') &&
+                !payload.startsWith('$1MAD')) {
+                // take care beacon update for advertisement data only
                 return
             }
             try {
                 parseMessage(payload, data => {
-                    const beacon = {
-                        mac: data.beacon,
-                        rssi: data.rssi,
-                        payload: data.advertisement.raw.toString('hex').toUpperCase(),
-                        message: this.payloadDescription(data.advertisement.manufacturerData) || 'Failed to parse payload',
-                        timestamp: moment().valueOf()
-                    }
-                    // const idx = this.beacons.findIndex(v => v.mac === beacon.mac)
-                    // if (idx >= 0) { this.beacons.splice(idx, 1) }
-                    // this.beacons.splice(0, 0, beacon)
-                    const old = this.beacons.find(v => v.mac === beacon.mac)
+                    const old = this.beacons.find(v => v.mac === data.beacon)
+                    data.advertisement.msd = data.advertisement.manufacturerData
+                    delete data.advertisement.manufacturerData
                     if (old) {
-                        this.$set(old, 'rssi', beacon.rssi)
-                        this.$set(old, 'payload', beacon.payload)
-                        this.$set(old, 'message', beacon.message)
-                        this.$set(old, 'timestamp', beacon.timestamp)
+                        this.$set(old, 'rssi', data.rssi)
+                        this.$set(old, 'timestamp', data.timestamp)
+                        this.$set(old, 'ad', data.advertisement)
                     } else {
-                        this.beacons.push(beacon)
+                        this.beacons.push({
+                            mac: data.beacon,
+                            rssi: data.rssi,
+                            timestamp: data.timestamp,
+                            ad: data.advertisement
+                        })
                     }
                 })
             } catch (err) { console.log(err) }
