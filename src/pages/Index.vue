@@ -119,6 +119,7 @@ import net from 'net'
 import mqtt from 'mqtt'
 import moment from 'moment'
 import { parseMessage } from '@ingics/message-parser'
+import AdvUtils from '../mixins/AdvUtils'
 import GatewayCard from '../components/GatewayCard'
 import GatewayCfgDialog from '../components/GatewayCfgDialog'
 import LogBrowser from '../components/LogBrowser'
@@ -147,6 +148,9 @@ export default {
             aboutDialog: false
         }
     },
+    mixins: [
+        AdvUtils
+    ],
     mounted () {
         const storedGateways = this.$q.localStorage.getItem('gateways')
         if (storedGateways) { this.gateways = storedGateways }
@@ -273,22 +277,17 @@ export default {
                 parseMessage(payload, data => {
                     const old = this.beacons.find(v => v.mac === data.beacon)
                     // pre-processing
-                    data.advertisement.msd = data.advertisement.manufacturerData
-                    delete data.advertisement.manufacturerData
-                    data.advertisement.raw = data.advertisement.raw.toString('hex').toUpperCase()
-                    if (data.advertisement.msd) {
-                        data.advertisement.msd.raw = data.advertisement.msd.raw.toString('hex').toUpperCase()
-                    }
+                    const ad = this.advPreprocessing(data.advertisement)
                     if (old) {
                         this.$set(old, 'rssi', data.rssi)
                         this.$set(old, 'timestamp', data.timestamp)
-                        this.$set(old, 'ad', data.advertisement)
+                        this.$set(old, 'ad', ad)
                     } else {
                         this.beacons.push({
                             mac: data.beacon,
                             rssi: data.rssi,
                             timestamp: data.timestamp,
-                            ad: data.advertisement
+                            ad: ad
                         })
                     }
                 })
