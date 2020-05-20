@@ -282,12 +282,17 @@ export default {
                         this.$set(old, 'rssi', data.rssi)
                         this.$set(old, 'timestamp', data.timestamp)
                         this.$set(old, 'ad', ad)
+                        old.rssis.push({ ts: data.timestamp, rssi: data.rssi })
+                        if (old.rssis.length > 300) {
+                            old.rssis.splice(0, old.rssis.length - 300)
+                        }
                     } else {
                         this.beacons.push({
                             mac: data.beacon,
                             rssi: data.rssi,
                             timestamp: data.timestamp,
-                            ad: ad
+                            ad: ad,
+                            rssis: [{ ts: data.timestamp, rssi: data.rssi }]
                         })
                     }
                 })

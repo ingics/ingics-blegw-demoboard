@@ -47,6 +47,9 @@
                     >
                         {{ col.label }}
                     </q-th>
+                    <q-th auto-width>
+                        RSSI
+                    </q-th>
                 </q-tr>
             </template>
             <template v-slot:body="props">
@@ -62,6 +65,23 @@
                         <transition name="slide-fade" mode="out-in">
                             <div :key="col.value">{{ col.value }}</div>
                         </transition>
+                    </q-td>
+                    <q-td>
+                        <q-item>
+                            <q-item-section>
+                                <transition name="slide-fade" mode="out-in">
+                                    <div :key="props.row.rssi">{{ props.row.rssi }}</div>
+                                </transition>
+                            </q-item-section>
+                            <q-item-section>
+                                <q-btn
+                                    flat dense round
+                                    icon="show_chart"
+                                    color="primary"
+                                    @click="showRssiChart(props.row)"
+                                ><q-tooltip>RSSI Chart</q-tooltip></q-btn>
+                            </q-item-section>
+                        </q-item>
                     </q-td>
                 </q-tr>
                 <q-tr v-show="props.expand" :props="props">
@@ -89,6 +109,11 @@
                 </q-item>
             </q-card>
         </q-dialog>
+        <q-dialog v-model="rssiChart.dialog">
+            <q-card class="q-pa-md" :style="{minWidth: '75vw'}">
+                <rssi-chart :title="rssiChart.title" :rssis="rssiChart.data" />
+            </q-card >
+        </q-dialog>
     </div>
 </template>
 
@@ -108,6 +133,7 @@
 
 <script>
 import moment from 'moment'
+import RssiChart from './RssiChart'
 import Advertisement from './Advertisement'
 export default {
     props: {
@@ -117,6 +143,7 @@ export default {
         }
     },
     components: {
+        RssiChart,
         Advertisement
     },
     data () {
@@ -145,14 +172,6 @@ export default {
                     sortable: true
                 },
                 {
-                    name: 'rssi',
-                    required: true,
-                    label: 'RSSI',
-                    align: 'center',
-                    field: row => row.rssi,
-                    sortable: true
-                },
-                {
                     name: 'timestamp',
                     required: true,
                     label: 'Last Update',
@@ -170,7 +189,12 @@ export default {
                 rssi: -100,
                 search: ''
             },
-            filterDialog: false
+            filterDialog: false,
+            rssiChart: {
+                dialog: false,
+                data: [],
+                title: ''
+            }
         }
     },
     methods: {
@@ -187,6 +211,19 @@ export default {
                     (msd && msd.type && msd.type.toUpperCase().indexOf(s) !== -1)
                 ) && row.rssi > terms.rssi
             })
+        },
+        showRssiChart (row) {
+            this.rssiChart.title = (v => {
+                if (v.ad.localName) {
+                    return `${v.localName} (${v.mac})`
+                } else if (v.ad.msd && v.ad.msd.type) {
+                    return `${v.ad.msd.type} (${v.mac})`
+                } else {
+                    return v.mac
+                }
+            })(row)
+            this.rssiChart.data = row.rssis
+            this.rssiChart.dialog = true
         }
     }
 }
