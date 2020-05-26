@@ -117,7 +117,7 @@
 import Vue from 'vue'
 import net from 'net'
 import mqtt from 'mqtt'
-import moment from 'moment'
+import readline from 'readline'
 import { parseMessage } from '@ingics/message-parser'
 import AdvUtils from '../mixins/AdvUtils'
 import GatewayCard from '../components/GatewayCard'
@@ -208,9 +208,9 @@ export default {
             })
             this.activeClient.on('message', function (topic, payload) {
                 if (me.activeClientPause) { return }
-                me.updateBeacons(payload.toString())
-                if (me.logs.length === 100) { me.logs.pop() }
-                me.logs.splice(0, 0, { timestamp: moment(), message: payload.toString() })
+                try {
+                    me.updateLogs(payload.toString())
+                } catch (e) { console.log(e) }
             })
             this.activeClient.on('close', function () {
                 me.activeClientPause = false
@@ -225,18 +225,16 @@ export default {
             this.activeClient = new net.Socket()
             this.activeClient.on('connect', function () {
                 me.activeClientStatus = true
+                const rl = readline.createInterface({ input: me.activeClient })
+                rl.on('line', line => {
+                    if (me.activeClientPause) { return }
+                    try {
+                        me.updateLogs(line.trim())
+                    } catch (e) { console.log(e) }
+                })
             })
             this.activeClient.on('close', function () {
                 me.activeClientStatus = false
-            })
-            this.activeClient.on('data', function (data) {
-                if (me.activeClientPause) { return }
-                const lines = data.toString().trim().split('\n')
-                lines.forEach(line => {
-                    me.updateBeacons(line)
-                    if (me.logs.length === 100) { me.logs.pop() }
-                    me.logs.splice(0, 0, { timestamp: moment(), message: line.trim() })
-                })
             })
             this.activeClient.on('timeout', function (data) {
                 // not sure what should i do
@@ -266,37 +264,35 @@ export default {
                 this.beacons.splice(0, this.beacons.length)
             })
         },
-        updateBeacons (payload) {
-            if (!payload.startsWith('$GPRP') &&
-                !payload.startsWith('$LRAD') &&
-                !payload.startsWith('$1MAD')) {
-                // take care beacon update for advertisement data only
-                return
-            }
-            try {
-                parseMessage(payload, data => {
-                    const old = this.beacons.find(v => v.mac === data.beacon)
-                    // pre-processing
-                    const ad = this.advPreprocessing(data.advertisement)
-                    if (old) {
-                        this.$set(old, 'rssi', data.rssi)
-                        this.$set(old, 'timestamp', data.timestamp)
-                        this.$set(old, 'ad', ad)
-                        old.rssis.push({ ts: data.timestamp, rssi: data.rssi })
-                        if (old.rssis.length > 300) {
-                            old.rssis.splice(0, old.rssis.length - 300)
-                        }
-                    } else {
-                        this.beacons.push({
-                            mac: data.beacon,
-                            rssi: data.rssi,
-                            timestamp: data.timestamp,
-                            ad: ad,
-                            rssis: [{ ts: data.timestamp, rssi: data.rssi }]
-                        })
+        updateLogs (payload) {
+            const me = this
+            parseMessage(payload, data => {
+                // update log list
+                if (me.logs.length === 100) { me.logs.pop() }
+                me.logs.splice(0, 0, { timestamp: data.timestamp, message: payload })
+                // update beacon only by broadcast data
+                if (data.type in ['GPRP', 'LRAD', '1MAD']) { return }
+                const old = this.beacons.find(v => v.mac === data.beacon)
+                // pre-processing
+                const ad = this.advPreprocessing(data.advertisement)
+                if (old) {
+                    this.$set(old, 'rssi', data.rssi)
+                    this.$set(old, 'timestamp', data.timestamp)
+                    this.$set(old, 'ad', ad)
+                    old.rssis.push({ ts: data.timestamp, rssi: data.rssi })
+                    if (old.rssis.length > 300) {
+                        old.rssis.splice(0, old.rssis.length - 300)
                     }
-                })
-            } catch (err) { console.log(err) }
+                } else {
+                    this.beacons.push({
+                        mac: data.beacon,
+                        rssi: data.rssi,
+                        timestamp: data.timestamp,
+                        ad: ad,
+                        rssis: [{ ts: data.timestamp, rssi: data.rssi }]
+                    })
+                }
+            })
         },
         refreshBeacons () {
             this.beacons.splice(0, this.beacons.length)

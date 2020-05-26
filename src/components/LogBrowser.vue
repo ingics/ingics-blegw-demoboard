@@ -6,24 +6,12 @@
             :columns="columns"
             hide-header
             hide-bottom
+            wrap-cells
             :grid="$q.screen.xs"
             :pagination.sync="pageOption"
             class="q-pa-md"
-        >
-            <template v-slot:body-cell-message="props">
-                <q-td :props="props" @click="selectLog(props.row.message)">
-                    <div v-if="$q.screen.gt.sm">
-                        {{ props.row.message }}
-                    </div>
-                    <div v-if="$q.screen.lt.md">
-                        {{ props.row.message.split(',').slice(0,4).join(',') }}
-                    </div>
-                    <div v-if="$q.screen.lt.md">
-                        {{ props.row.message.split(',').slice(-1)[0] }}
-                    </div>
-                </q-td>
-            </template>
-        </q-table>
+            @row-click="selectLog"
+        ></q-table>
         <q-resize-observer @resize="onResize" />
         <q-dialog v-model="detailDialog" v-if="selectedLog">
             <q-card class="q-pa-md" :style="{minWidth: '80vw'}">
@@ -74,7 +62,7 @@ export default {
                     label: 'Message',
                     align: 'left',
                     field: row => row.message,
-                    format: val => this.formatMessage(val),
+                    format: val => val.replace(/,/g, ',\n'), // for content wrap
                     sortable: false
                 }
             ],
@@ -86,28 +74,12 @@ export default {
         }
     },
     methods: {
-        formatMessage (message) {
-            if (this.$q.screen.xs) {
-                // handle manual line-wrap
-                const fields = message.split(',')
-                const formatted = [fields.slice(0, 4).join(',')]
-                let payload = fields.slice(-1)[0]
-                while (payload.length > this.linewrapPoint) {
-                    formatted.push(payload.substring(0, this.linewrapPoint))
-                    payload = payload.slice(this.linewrapPoint)
-                }
-                formatted.push(payload)
-                return formatted.join('\n')
-            } else {
-                return message
-            }
-        },
         onResize (size) {
             this.reportSize = size
             this.linewrapPoint = size.width / 9
         },
-        selectLog (message) {
-            parseMessage(message, data => {
+        selectLog (evt, row) {
+            parseMessage(row.message, data => {
                 this.selectedLog = {
                     beacon: data.beacon,
                     gateway: data.gateway,
