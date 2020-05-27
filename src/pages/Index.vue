@@ -271,7 +271,7 @@ export default {
                 if (me.logs.length === 100) { me.logs.pop() }
                 me.logs.splice(0, 0, { timestamp: data.timestamp, message: payload })
                 // update beacon only by broadcast data
-                if (data.type in ['GPRP', 'LRAD', '1MAD']) { return }
+                if (!['GPRP', 'LRAD', '1MAD'].includes(data.type)) { return }
                 const old = this.beacons.find(v => v.mac === data.beacon)
                 // pre-processing
                 const ad = this.advPreprocessing(data.advertisement)
