@@ -9,13 +9,28 @@
             ></GChart>
         </q-card-section>
         <q-card-section>
-            <q-item tag="label" v-ripple>
+            <q-item>
                 <q-item-section avatar>
                     <q-checkbox v-model="kalman.enable" color="orange" />
                 </q-item-section>
                 <q-item-section>
                     <q-item-label>Apply Kalman Filter</q-item-label>
-                    <q-item-label caption>{{ kalmanDesc }}</q-item-label>
+                    <q-item-label caption>
+                        System Noise (R):
+                        <span>
+                            {{ kalman.r }}
+                            <q-popup-edit v-model="kalman.r">
+                                <q-input v-model.number="kalman.r" label="System Noise (R)" autofocus></q-input>
+                            </q-popup-edit>
+                        </span>
+                        , Measurements Noise (Q):
+                        <span>
+                            {{ kalman.q }}
+                            <q-popup-edit v-model="kalman.q">
+                                <q-input v-model.number="kalman.q" label="Measurements Noise (Q)" autofocus></q-input>
+                            </q-popup-edit>
+                        </span>
+                    </q-item-label>
                 </q-item-section>
             </q-item>
         </q-card-section>
@@ -56,9 +71,6 @@ export default {
         this.chartOptions.title = this.title
     },
     computed: {
-        kalmanDesc () {
-            return `R (system noise): ${this.kalman.r}, Q (measurements noise): ${this.kalman.q}`
-        },
         chartData () {
             if (!this.chartlib) {
                 return null
