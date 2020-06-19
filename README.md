@@ -1,8 +1,9 @@
 # Ingics BLE-GW Demo Board
 > Dashboard application for Ingics BLEGW demostration or testing
 
-![](../assets/screenshot-gwcfg.png)
+![](../assets/screenshot-gwcfg.png) 
 ![](../assets/screenshot-beacons.png)
+![](../assets/screenshot-accel-chart.png)
 
 ## Installation
 
@@ -43,9 +44,12 @@ APP Gateway:
 ### Activate Connection
 - Click gateway card for activate gateway (broker) connection
 - Logs button for switch to log browser
+    - support message parsing (click on log)
 - Beacon button for switch to beacon browser
     - support rssi filter
     - support test search (filter)
+    - support rssi chart
+    - support accelerometer reading chart
 
 ## Development Setup
 
