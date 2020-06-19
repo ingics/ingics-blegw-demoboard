@@ -275,21 +275,26 @@ export default {
                 const old = this.beacons.find(v => v.mac === data.beacon)
                 // pre-processing
                 const ad = this.advPreprocessing(data.advertisement)
+                const msd = ad.msd
+                let accel
+                if (msd && 'accel' in msd) accel = msd.accel
+                else if (msd && 'accels' in msd) accel = msd.accels[0]
                 if (old) {
                     this.$set(old, 'rssi', data.rssi)
                     this.$set(old, 'timestamp', data.timestamp)
                     this.$set(old, 'ad', ad)
                     old.rssis.push({ ts: data.timestamp, rssi: data.rssi })
-                    if (old.rssis.length > 300) {
-                        old.rssis.splice(0, old.rssis.length - 300)
-                    }
+                    if (old.rssis.length > 300) old.rssis.splice(0, old.rssis.length - 300)
+                    old.accels.push({ ts: data.timestamp, accel: accel })
+                    if (old.accels.length > 300) old.accels.splice(0, old.accels.length - 300)
                 } else {
                     this.beacons.push({
                         mac: data.beacon,
                         rssi: data.rssi,
                         timestamp: data.timestamp,
                         ad: ad,
-                        rssis: [{ ts: data.timestamp, rssi: data.rssi }]
+                        rssis: [{ ts: data.timestamp, rssi: data.rssi }],
+                        accels: [{ ts: data.timestamp, accel: accel }]
                     })
                 }
             })

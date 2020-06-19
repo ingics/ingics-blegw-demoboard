@@ -78,6 +78,12 @@
                         z {{ ad.msd.accel.z }}
                     </span>
                 </transition>
+                <q-btn
+                    flat dense round size="xs"
+                    icon="show_chart"
+                    color="primary"
+                    @click="$emit('showAccelChart')"
+                ><q-tooltip>Accelerometer Chart</q-tooltip></q-btn>
             </div>
             <div v-if="ad.msd.accels">
                 Accelerometer:
@@ -88,6 +94,12 @@
                         z {{ ad.msd.accels[0].z }}
                     </span>
                 </transition>
+                <q-btn
+                    flat dense round size="xs"
+                    icon="show_chart"
+                    color="primary"
+                    @click="$emit('showAccelChart')"
+                ><q-tooltip>Accelerometer Chart</q-tooltip></q-btn>
             </div>
             <!-- iBeacon -->
             <div v-if="ad.msd.uuid">

@@ -86,7 +86,7 @@
                 </q-tr>
                 <q-tr v-show="props.expand" :props="props">
                     <q-td colspan="100%">
-                        <advertisement :ad="props.row.ad" />
+                        <advertisement :ad="props.row.ad" @showAccelChart="showAccelChart(props.row)" />
                     </q-td>
                 </q-tr>
             </template>
@@ -114,6 +114,11 @@
                 <rssi-chart :title="rssiChart.title" :rssis="rssiChart.data" />
             </q-card >
         </q-dialog>
+        <q-dialog v-model="accelChart.dialog">
+            <q-card class="q-pa-md" :style="{minWidth: '75vw'}">
+                <acceleroment-chart :title="accelChart.title" :accels="accelChart.data" />
+            </q-card>
+        </q-dialog>
     </div>
 </template>
 
@@ -135,6 +140,7 @@
 import moment from 'moment'
 import RssiChart from './RssiChart'
 import Advertisement from './Advertisement'
+import AcceleromentChart from './AccelerometerChart'
 export default {
     props: {
         beacons: {
@@ -144,7 +150,8 @@ export default {
     },
     components: {
         RssiChart,
-        Advertisement
+        Advertisement,
+        AcceleromentChart
     },
     data () {
         return {
@@ -194,6 +201,11 @@ export default {
                 dialog: false,
                 data: [],
                 title: ''
+            },
+            accelChart: {
+                dialog: false,
+                data: [],
+                title: ''
             }
         }
     },
@@ -212,18 +224,24 @@ export default {
                 ) && row.rssi > terms.rssi
             })
         },
+        chartTitle (row) {
+            if (row.ad.localName) {
+                return `${row.localName} (${row.mac})`
+            } else if (row.ad.msd && row.ad.msd.type) {
+                return `${row.ad.msd.type} (${row.mac})`
+            } else {
+                return row.mac
+            }
+        },
         showRssiChart (row) {
-            this.rssiChart.title = (v => {
-                if (v.ad.localName) {
-                    return `${v.localName} (${v.mac})`
-                } else if (v.ad.msd && v.ad.msd.type) {
-                    return `${v.ad.msd.type} (${v.mac})`
-                } else {
-                    return v.mac
-                }
-            })(row)
+            this.rssiChart.title = this.chartTitle(row)
             this.rssiChart.data = row.rssis
             this.rssiChart.dialog = true
+        },
+        showAccelChart (row) {
+            this.accelChart.title = this.chartTitle(row)
+            this.accelChart.data = row.accels
+            this.accelChart.dialog = true
         }
     }
 }
