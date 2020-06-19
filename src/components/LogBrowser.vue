@@ -15,11 +15,16 @@
         <q-resize-observer @resize="onResize" />
         <q-dialog v-model="detailDialog" v-if="selectedLog">
             <q-card class="q-pa-md" :style="{minWidth: '80vw'}">
-                <div>Beacon: {{ selectedLog.beacon }}</div>
+                <div v-if="!selectedLog.gnss">Beacon: {{ selectedLog.beacon }}</div>
                 <div>Gateway: {{ selectedLog.gateway }}</div>
-                <div>RSSI: {{ selectedLog.rssi }}</div>
+                <div v-if="!selectedLog.gnss">RSSI: {{ selectedLog.rssi }}</div>
                 <div>Timestamp: {{ selectedLog.timestamp }}</div>
-                <advertisement :ad="selectedLog.advertisement" />
+                <advertisement v-if="selectedLog.advertisement" :ad="selectedLog.advertisement" />
+                <div v-if="selectedLog.gnss">Fix Time: {{ selectedLog.gnss.fixTimestamp }}</div>
+                <div v-if="selectedLog.gnss">Latitude: {{ selectedLog.gnss.latitude }}</div>
+                <div v-if="selectedLog.gnss">Longitude: {{ selectedLog.gnss.longitude }}</div>
+                <div v-if="selectedLog.gnss">Speed: {{ selectedLog.gnss.speed }}</div>
+                <div v-if="selectedLog.gnss">HDOP: {{ selectedLog.gnss.hdop }}</div>
             </q-card>
         </q-dialog>
     </div>
@@ -80,13 +85,20 @@ export default {
         },
         selectLog (evt, row) {
             parseMessage(row.message, data => {
-                this.selectedLog = {
+                const log = {
                     beacon: data.beacon,
                     gateway: data.gateway,
                     timestamp: moment(data.timestamp).format('L LTS'),
-                    rssi: data.rssi,
-                    advertisement: this.advPreprocessing(data.advertisement)
+                    rssi: data.rssi
                 }
+                if (data.advertisement) {
+                    log.advertisement = this.advPreprocessing(data.advertisement)
+                }
+                if (data.gnss) {
+                    log.gnss = data.gnss
+                    log.gnss.fixTimestamp = moment(data.gnss.fixTimestamp).format('L LTS')
+                }
+                this.selectedLog = log
                 this.detailDialog = true
             })
         }

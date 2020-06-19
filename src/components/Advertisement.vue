@@ -1,5 +1,5 @@
 <template>
-    <div class="gateway-card">
+    <div class="adv-card">
         Advertisement: {{ ad.raw }}
         <div v-if="ad.flags">
             Flags: {{ '0x' + ad.flags.toString(16) }}
