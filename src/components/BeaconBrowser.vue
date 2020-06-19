@@ -233,7 +233,7 @@ export default {
         },
         chartTitle (row) {
             if (row.ad.localName) {
-                return `${row.localName} (${row.mac})`
+                return `${row.ad.localName} (${row.mac})`
             } else if (row.ad.msd && row.ad.msd.type) {
                 return `${row.ad.msd.type} (${row.mac})`
             } else {
