@@ -55,7 +55,11 @@
             <template v-slot:body="props">
                 <q-tr :props="props">
                     <q-td auto-width>
-                        <q-btn size="sm" color="accent" round dense @click="props.expand = !props.expand" :icon="props.expand ? 'remove' : 'add'" />
+                        <q-btn
+                            size="sm" color="accent" round dense
+                            @click="onRowExpand(props)"
+                            :icon="rowExpandIcon(props)"
+                            :disabled="autoExpand" />
                     </q-td>
                     <q-td
                         v-for="col in props.cols"
@@ -84,7 +88,7 @@
                         </q-item>
                     </q-td>
                 </q-tr>
-                <q-tr v-show="props.expand" :props="props">
+                <q-tr v-show="props.expand || autoExpand" :props="props">
                     <q-td colspan="100%">
                         <advertisement :ad="props.row.ad" @showAccelChart="showAccelChart(props.row)" />
                     </q-td>
@@ -206,13 +210,14 @@ export default {
                 dialog: false,
                 data: [],
                 title: ''
-            }
+            },
+            autoExpand: false
         }
     },
     methods: {
         doFilter (rows, terms, cols, getCellValue) {
             const s = terms.search.toUpperCase()
-            return rows.filter(row => {
+            const result = rows.filter(row => {
                 if (row === false) return false
                 const ad = row.ad
                 const msd = row.ad.msd
@@ -223,6 +228,8 @@ export default {
                     (msd && msd.type && msd.type.toUpperCase().indexOf(s) !== -1)
                 ) && row.rssi > terms.rssi
             })
+            this.autoExpand = result.length <= 2
+            return result
         },
         chartTitle (row) {
             if (row.ad.localName) {
@@ -242,6 +249,12 @@ export default {
             this.accelChart.title = this.chartTitle(row)
             this.accelChart.data = row.accels
             this.accelChart.dialog = true
+        },
+        onRowExpand (props) {
+            props.expand = !(props.expand || this.autoExpand)
+        },
+        rowExpandIcon (props) {
+            return (props.expand || this.autoExpand) ? 'remove' : 'add'
         }
     }
 }

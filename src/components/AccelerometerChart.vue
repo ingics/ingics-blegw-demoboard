@@ -73,7 +73,7 @@ export default {
                     const tooltip = moment(v.ts).format('lll') + '\n' +
                         'X: ' + v.accel.x + ' (' + (v.accel.x / 250).toFixed(2) + 'g)\n' +
                         'Y: ' + v.accel.y + ' (' + (v.accel.y / 250).toFixed(2) + 'g)\n' +
-                        'Z: ' + v.accel.z + ' (' + (v.accel.z / 250).toFixed(2) + 'g)\n'
+                        'Z: ' + v.accel.z + ' (' + (v.accel.z / 250).toFixed(2) + 'g)'
                     data.addRow([new Date(v.ts), v.accel.x, tooltip, v.accel.y, tooltip, v.accel.z, tooltip])
                 })
             }
