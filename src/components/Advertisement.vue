@@ -58,6 +58,9 @@
             <div v-if="ad.msd.humidity">
                 Humidity: {{ ad.msd.humidity }}%
             </div>
+            <div v-if="ad.msd.range">
+                Range: {{ ad.msd.range }}mm
+            </div>
             <div v-if="ad.msd.events">
                 Events:
                 <transition name="slide-fade" mode="out-in">
@@ -165,7 +168,7 @@ export default {
     methods: {
         eventList (events) {
             const ans = []
-            const eventNames = ['button', 'moving', 'hall', 'fall', 'detect', 'matt']
+            const eventNames = ['button', 'moving', 'hall', 'fall', 'detect', 'sensor', 'boot']
             eventNames.forEach(e => {
                 if (e in events && events[e]) {
                     ans.push(e)
