@@ -73,7 +73,8 @@ module.exports = function (/* ctx */) {
       env: {
         APP_VERSION: JSON.stringify(require('./package.json').version),
         APP_HASH: JSON.stringify(execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim()),
-        ELECTRON_VERSION: JSON.stringify(require('./node_modules/electron/package.json').version)
+        ELECTRON_VERSION: JSON.stringify(require('./node_modules/electron/package.json').version),
+        PARSER_VERSION: JSON.stringify(execSync('npm list --depth=0 @ingics/message-parser | grep github | cut -d \'#\' -f 2 | head -c 7', { encoding: 'utf8' }).trim())
       },
       // rtl: false, // https://quasar.dev/options/rtl-support
       // showProgress: false,

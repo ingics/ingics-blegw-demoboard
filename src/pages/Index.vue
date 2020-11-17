@@ -106,6 +106,7 @@
                         <q-item-label>Vue: {{ vueVersion }}</q-item-label>
                         <q-item-label>Quasar: {{ $q.version }}</q-item-label>
                         <q-item-label>Electron: {{ electronVersion }}</q-item-label>
+                        <q-item-label>Parser: {{ parserVersion }}</q-item-label>
                     </q-item-section>
                 </q-card-section>
             </q-card>
@@ -308,7 +309,8 @@ export default {
         appVersion: () => process.env.APP_VERSION,
         electronVersion: () => process.env.ELECTRON_VERSION,
         vueVersion: () => Vue.version,
-        nodejsVersion: () => process.version
+        nodejsVersion: () => process.version,
+        parserVersion: () => process.env.PARSER_VERSION
     }
 }
 </script>
