@@ -66,12 +66,12 @@
                     :key="gateway.name"
                 >
                     <gateway-card
-                        :name=gateway.name
-                        :host=gateway.host
-                        :port=gateway.port
-                        :protocol=gateway.protocol
-                        :topic=gateway.topic
-                        :app=gateway.app
+                        :name="gateway.name"
+                        :host="gateway.host"
+                        :port="gateway.port"
+                        :protocol="gateway.protocol"
+                        :topic="gateway.topic"
+                        :app="gateway.app"
                         @selected="activateGateway"
                         @setting="launchGatewayCfg"
                         @delete="deleteGateway"
@@ -136,17 +136,18 @@ export default {
     data () {
         return {
             gateways: [],
-            currentCfg: undefined,
+            currentCfg: null,
             currentCfgKey: '',
             currentCfgDialog: false,
             clients: {},
-            activeClient: undefined,
+            activeClient: null,
             activeClientStatus: false,
             activeClientPause: false,
             logs: [],
             beacons: [],
             browseMode: 'log',
-            aboutDialog: false
+            aboutDialog: false,
+            beaconClearTimeout: null
         }
     },
     mixins: [
@@ -168,6 +169,7 @@ export default {
             this.$set(gateway, 'host', cfg.host)
             this.$set(gateway, 'port', cfg.port)
             this.$set(gateway, 'topic', cfg.topic)
+            this.$set(gateway, 'clearTimeout', cfg.clearTimeout)
             if (flush) { this.$q.localStorage.set('gateways', this.gateways) }
         },
         saveGatewaySetting (cfg) {
@@ -179,12 +181,10 @@ export default {
                 this.$q.localStorage.set('gateways', this.gateways)
             } else {
                 if (this.activeClient) {
-                    this.activeClient.end(() => {
-                        me.logs.splice(0, this.logs.length)
-                        me.beacons.splice(0, this.beacons.length)
-                        me.applyGatewaySetting(this.currentCfg, cfg, true)
-                        me.activateGateway(cfg.name)
-                    })
+                    const oldCfg = this.currentCfg
+                    me.deactivateGateway()
+                    me.applyGatewaySetting(oldCfg, cfg, true)
+                    // me.activateGateway(cfg.name)
                 } else {
                     this.applyGatewaySetting(this.currentCfg, cfg, true)
                 }
@@ -225,6 +225,7 @@ export default {
             const me = this
             this.activeClient = new net.Socket()
             this.activeClient.on('connect', function () {
+                // console.log('on connected')
                 me.activeClientStatus = true
                 const rl = readline.createInterface({ input: me.activeClient })
                 rl.on('line', line => {
@@ -234,20 +235,28 @@ export default {
                     } catch (e) { console.log(e) }
                 })
             })
+            this.activeClient.on('end', function () {
+                // console.log('on end')
+            })
             this.activeClient.on('close', function () {
+                // console.log('on closed')
                 me.activeClientStatus = false
             })
             this.activeClient.on('timeout', function (data) {
                 // not sure what should i do
+                // console.log('on timeout')
                 me.activeClient.close()
                 me.activeClient.connect(this.currentCfg.port, this.currentCfg.host)
             })
             this.activeClient.on('error', function (error) {
+                // console.log('on error')
                 me.$q.notify({ message: error.toString(), color: 'red' })
             })
+            // console.log('connect')
             this.activeClient.connect(this.currentCfg.port, this.currentCfg.host)
         },
         activateGateway (name) {
+            const me = this
             this.currentCfg = this.gateways.find(v => v.name === name)
             this.activeClientPause = false
             this.activeClientStatus = false
@@ -256,11 +265,28 @@ export default {
             } else if (this.currentCfg.app === 'm2m') {
                 this.activateM2mGateway()
             }
+            this.beaconClearTimeout = setInterval(() => {
+                const now = Date.now() // millinseconds
+                const clearTimeout = me.currentCfg.clearTimeout ? me.currentCfg.clearTimeout * 1000 : 5000
+                while (true) {
+                    const index = me.beacons.findIndex((e) => (now - e.timestamp) > (clearTimeout))
+                    if (index >= 0) {
+                        me.beacons.splice(index, 1)
+                    } else {
+                        break
+                    }
+                }
+            }, 1000)
         },
         deactivateGateway () {
+            if (this.beaconClearTimeout) {
+                clearTimeout(this.beaconClearTimeout)
+                this.beaconClearTimeout = null
+            }
+            // this.activeClient.destroy()
             this.activeClient.end(() => {
-                this.currentCfg = undefined
-                this.activeClient = undefined
+                this.currentCfg = null
+                this.activeClient = null
                 this.logs.splice(0, this.logs.length)
                 this.beacons.splice(0, this.beacons.length)
             })

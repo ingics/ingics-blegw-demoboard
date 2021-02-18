@@ -7,6 +7,12 @@
             <q-card-section class="gateway-setting-header q-pa-none">
                 <q-toolbar>
                     <q-toolbar-title>{{ title }}</q-toolbar-title>
+                    <q-space />
+                    <q-btn
+                        round flat size=".7rem"
+                        v-model="showMore"
+                        @click="showMore = !showMore"
+                        :icon="showMore ? 'expand_less' : 'expand_more'" />
                 </q-toolbar>
             </q-card-section>
             <q-separator />
@@ -17,6 +23,7 @@
                     <q-input outlined label="Host" v-model="newHost" class="q-mb-xs" />
                     <q-input outlined label="Port" type="number" v-model.number="newPort" hide-bottom-space class="q-mb-xs" />
                     <q-input v-if="newApp == 'mqtt'" outlined label="Subscribe Topic" v-model="newTopic" class="q-mb-xs" />
+                    <q-input v-if="showMore" outlined label="Beacon Clear Timeout" type="number" v-model.number="newClearTimeout" hide-bottom-space class="q-mb-xs" />
                 </div>
             </q-card-section>
             <q-separator />
@@ -50,7 +57,8 @@ export default {
                     name: '',
                     host: '',
                     port: 1883,
-                    topic: ''
+                    topic: '',
+                    clearTimeout: 5
                 }
             }
         }
@@ -63,6 +71,7 @@ export default {
             newHost: '',
             newPort: 1883,
             newTopic: '',
+            newClearTimeout: 5,
             dialogValue: false,
             apps: [
                 {
@@ -72,7 +81,8 @@ export default {
                     label: 'M2M',
                     value: 'm2m'
                 }
-            ]
+            ],
+            showMore: false
         }
     },
     mounted () {
@@ -83,6 +93,7 @@ export default {
         this.newHost = this.cfg.host
         this.newPort = this.cfg.port
         this.newTopic = this.cfg.topic
+        this.newClearTimeout = this.cfg.clearTimeout ? this.cfg.clearTimeout : 5
     },
     watch: {
         value (v) {
@@ -99,7 +110,8 @@ export default {
                 name: this.newName.trim(),
                 host: this.newHost.trim(),
                 port: this.newPort,
-                topic: this.newTopic.trim()
+                topic: this.newTopic.trim(),
+                clearTimeout: this.newClearTimeout
             })
         }
     }
