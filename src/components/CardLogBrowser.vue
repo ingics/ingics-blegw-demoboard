@@ -1,8 +1,8 @@
 <template>
     <div>
         <q-table
-            title="Logs"
-            :data="logs"
+            title="Received Messages"
+            :data="$store.state.db.messages"
             :columns="columns"
             hide-header
             hide-bottom
@@ -11,7 +11,18 @@
             :pagination.sync="pageOption"
             class="q-pa-md"
             @row-click="selectLog"
-        ></q-table>
+        >
+            <template v-slot:top-right>
+                <q-btn
+                    v-if="$store.state.con.status === 'ok'"
+                    outline rounded
+                    :color="$store.state.con.pause ? 'green-6' : 'orange-8'"
+                    :label="$store.state.con.pause ? 'resume' : 'pause'"
+                    :icon-right="$store.state.con.pause ? 'play_arrow' : 'pause'"
+                    @click="$store.commit('con/pause')"
+                />
+            </template>
+        </q-table>
         <q-resize-observer @resize="onResize" />
         <q-dialog v-model="detailDialog" v-if="selectedLog">
             <q-card class="q-pa-md" :style="{minWidth: '80vw'}">
@@ -19,7 +30,7 @@
                 <div>Gateway: {{ selectedLog.gateway }}</div>
                 <div v-if="!selectedLog.gnss">RSSI: {{ selectedLog.rssi }}</div>
                 <div>Timestamp: {{ selectedLog.timestamp }}</div>
-                <advertisement v-if="selectedLog.advertisement" :ad="selectedLog.advertisement" />
+                <panel-advertisement v-if="selectedLog.advertisement" :ad="selectedLog.advertisement" />
                 <div v-if="selectedLog.gnss">Fix Time: {{ selectedLog.gnss.fixTimestamp }}</div>
                 <div v-if="selectedLog.gnss">Latitude: {{ selectedLog.gnss.latitude }}</div>
                 <div v-if="selectedLog.gnss">Longitude: {{ selectedLog.gnss.longitude }}</div>
@@ -33,18 +44,12 @@
 <script>
 import moment from 'moment'
 import AdvUtils from '../mixins/AdvUtils'
-import Advertisement from './Advertisement'
 import { parseMessage } from '@ingics/message-parser'
+import PanelAdvertisement from './PanelAdvertisement.vue'
 export default {
-    // name: 'LogBrowser',
-    props: {
-        logs: {
-            type: Array,
-            required: true
-        }
-    },
+    name: 'CardLogBrowser',
     components: {
-        Advertisement
+        PanelAdvertisement
     },
     mixins: [
         AdvUtils
@@ -57,7 +62,7 @@ export default {
                     required: true,
                     label: 'Timestamp',
                     align: 'left',
-                    field: row => row.timestamp,
+                    field: row => row.ts,
                     format: val => `${moment(val).format('L LTS')}`,
                     sortable: false
                 },
@@ -66,7 +71,7 @@ export default {
                     required: true,
                     label: 'Message',
                     align: 'left',
-                    field: row => row.message,
+                    field: row => row.raw,
                     format: val => val.replace(/,/g, ',\n'), // for content wrap
                     sortable: false
                 }
@@ -84,7 +89,7 @@ export default {
             this.linewrapPoint = size.width / 9
         },
         selectLog (evt, row) {
-            parseMessage(row.message, data => {
+            parseMessage(row.raw, data => {
                 const log = {
                     beacon: data.beacon,
                     gateway: data.gateway,
@@ -92,7 +97,11 @@ export default {
                     rssi: data.rssi
                 }
                 if (data.advertisement) {
-                    log.advertisement = this.advPreprocessing(data.advertisement)
+                    log.advertisement = data.advertisement
+                    log.advertisement.raw = data.advertisement.raw.toString('hex').toUpperCase()
+                    if (log.advertisement.manufacturerData) {
+                        log.advertisement.manufacturerData.raw = log.advertisement.manufacturerData.raw.toString('hex').toUpperCase()
+                    }
                 }
                 if (data.gnss) {
                     log.gnss = data.gnss

@@ -203,7 +203,7 @@ module.exports = function (/* ctx */) {
         },
         extraResources: [
           {
-            from: 'src-electron/icons/linux-32x32.png',
+            from: 'src-electron/icons/icon.png',
             to: 'icon.png'
           }
         ]

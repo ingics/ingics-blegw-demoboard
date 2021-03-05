@@ -1,6 +1,6 @@
 <template>
     <div class="adv-card">
-        Advertisement: {{ ad.raw }}
+        Advertisement: {{ ad.raw.toString('hex').toUpperCase() }}
         <div v-if="ad.flags">
             Flags: {{ '0x' + ad.flags.toString(16) }}
         </div>
@@ -38,47 +38,47 @@
         >
             Service UUID: {{ d }}
         </div>
-        <div v-if="ad.msd">
-            <div v-if="ad.msd.company">
-                Company: {{ ad.msd.company }}
+        <div v-if="ad.manufacturerData">
+            <div v-if="ad.manufacturerData.company">
+                Company: {{ ad.manufacturerData.company }}
             </div>
-            <div v-if="ad.msd.type">
-                Type: {{ ad.msd.type }}
+            <div v-if="ad.manufacturerData.type">
+                Type: {{ ad.manufacturerData.type }}
             </div>
             <!-- Ingics IBSXX -->
-            <div v-if="ad.msd.battery">
-                Battery: {{ ad.msd.battery }}V
+            <div v-if="ad.manufacturerData.battery">
+                Battery: {{ ad.manufacturerData.battery }}V
             </div>
-            <div v-if="ad.msd.temperature">
-                Temperature: {{ ad.msd.temperature }}°C
+            <div v-if="ad.manufacturerData.temperature">
+                Temperature: {{ ad.manufacturerData.temperature }}°C
             </div>
-            <div v-if="ad.msd.temperatureExt">
-                External Temperature: {{ ad.msd.temperatureExt }}°C
+            <div v-if="ad.manufacturerData.temperatureExt">
+                External Temperature: {{ ad.manufacturerData.temperatureExt }}°C
             </div>
-            <div v-if="ad.msd.humidity">
-                Humidity: {{ ad.msd.humidity }}%
+            <div v-if="ad.manufacturerData.humidity">
+                Humidity: {{ ad.manufacturerData.humidity }}%
             </div>
-            <div v-if="ad.msd.range">
-                Range: {{ ad.msd.range }}mm
+            <div v-if="ad.manufacturerData.range">
+                Range: {{ ad.manufacturerData.range }}mm
             </div>
-            <div v-if="ad.msd.events">
+            <div v-if="ad.manufacturerData.events">
                 Events:
                 <transition name="slide-fade" mode="out-in">
-                    <span :key="ad.msd.eventFlag">
-                        0x{{ ad.msd.eventFlag.toString(16) }}
+                    <span :key="ad.manufacturerData.eventFlag">
+                        0x{{ ad.manufacturerData.eventFlag.toString(16) }}
                     </span>
                 </transition>
-                <span v-if="ad.msd.eventFlag != 0">
-                    ({{ eventList(ad.msd.events) }})
+                <span v-if="ad.manufacturerData.eventFlag != 0">
+                    ({{ eventList(ad.manufacturerData.events) }})
                 </span>
             </div>
-            <div v-if="ad.msd.accel">
+            <div v-if="ad.manufacturerData.accel">
                 Accelerometer:
                 <transition name="slide-fade" mode="out-in">
-                    <span :key="ad.msd.accel.toString()">
-                        x {{ ad.msd.accel.x }},
-                        y {{ ad.msd.accel.y }},
-                        z {{ ad.msd.accel.z }}
+                    <span :key="ad.manufacturerData.accel.toString()">
+                        x {{ ad.manufacturerData.accel.x }},
+                        y {{ ad.manufacturerData.accel.y }},
+                        z {{ ad.manufacturerData.accel.z }}
                     </span>
                 </transition>
                 <q-btn
@@ -88,13 +88,13 @@
                     @click="$emit('showAccelChart')"
                 ><q-tooltip>Accelerometer Chart</q-tooltip></q-btn>
             </div>
-            <div v-if="ad.msd.accels">
+            <div v-if="ad.manufacturerData.accels">
                 Accelerometer:
                 <transition name="slide-fade" mode="out-in">
-                    <span :key="ad.msd.accels[0].toString()">
-                        x {{ ad.msd.accels[0].x }},
-                        y {{ ad.msd.accels[0].y }},
-                        z {{ ad.msd.accels[0].z }}
+                    <span :key="ad.manufacturerData.accels[0].toString()">
+                        x {{ ad.manufacturerData.accels[0].x }},
+                        y {{ ad.manufacturerData.accels[0].y }},
+                        z {{ ad.manufacturerData.accels[0].z }}
                     </span>
                 </transition>
                 <q-btn
@@ -105,42 +105,42 @@
                 ><q-tooltip>Accelerometer Chart</q-tooltip></q-btn>
             </div>
             <!-- iBeacon -->
-            <div v-if="ad.msd.uuid">
-                UUID: {{ ad.msd.uuid }}
+            <div v-if="ad.manufacturerData.uuid">
+                UUID: {{ ad.manufacturerData.uuid }}
             </div>
-            <div v-if="ad.msd.major">
-                Major: {{ ad.msd.major }}
+            <div v-if="ad.manufacturerData.major">
+                Major: {{ ad.manufacturerData.major }}
             </div>
-            <div v-if="ad.msd.minor">
-                Minor: {{ ad.msd.minor }}
+            <div v-if="ad.manufacturerData.minor">
+                Minor: {{ ad.manufacturerData.minor }}
             </div>
-            <div v-if="ad.msd.tx">
-                Tx Power: {{ ad.msd.tx }}
+            <div v-if="ad.manufacturerData.tx">
+                Tx Power: {{ ad.manufacturerData.tx }}
             </div>
             <!-- Microsoft -->
-            <div v-if="ad.msd.scenario">
-                Scenario: {{ ad.msd.scenario }}
+            <div v-if="ad.manufacturerData.scenario">
+                Scenario: {{ ad.manufacturerData.scenario }}
             </div>
-            <div v-if="ad.msd.slat">
-                Slat: {{ ad.msd.slat }}
+            <div v-if="ad.manufacturerData.slat">
+                Slat: {{ ad.manufacturerData.slat }}
             </div>
-            <div v-if="ad.msd.deviceHash">
-                Device Hash: {{ ad.msd.deviceHash }}
+            <div v-if="ad.manufacturerData.deviceHash">
+                Device Hash: {{ ad.manufacturerData.deviceHash }}
             </div>
             <!-- altBeacon -->
-            <div v-if="ad.msd.id">
-                Device ID: {{ ad.msd.id }}
+            <div v-if="ad.manufacturerData.id">
+                Device ID: {{ ad.manufacturerData.id }}
             </div>
-            <div v-if="ad.msd.refrssi">
-                Reference RSSI: {{ ad.msd.refrssi }}
+            <div v-if="ad.manufacturerData.refrssi">
+                Reference RSSI: {{ ad.manufacturerData.refrssi }}
             </div>
-            <div v-if="ad.msd.mfgReserved">
-                MFG Reserved: {{ ad.msd.mfgReserved }}
+            <div v-if="ad.manufacturerData.mfgReserved">
+                MFG Reserved: {{ ad.manufacturerData.mfgReserved }}
             </div>
             Manufacture Data:
             <transition name="slide-fade" mode="out-in">
-                <span :key="ad.msd.raw">
-                    {{ ad.msd.raw }}
+                <span :key="ad.manufacturerData.raw.toString('hex').toUpperCase()">
+                    {{ ad.manufacturerData.raw.toString('hex').toUpperCase() }}
                 </span>
             </transition>
         </div>
@@ -163,7 +163,7 @@
 
 <script>
 export default {
-    name: 'Advertisement',
+    name: 'PanelAdvertisement',
     props: ['ad'],
     methods: {
         eventList (events) {

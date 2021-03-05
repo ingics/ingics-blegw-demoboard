@@ -2,9 +2,20 @@
 const routes = [
     {
         path: '/',
-        component: () => import('layouts/MainLayout.vue'),
+        component: () => import('layouts/MyLayout.vue'),
         children: [
-            { path: '', component: () => import('pages/Index.vue') }
+            {
+                path: '',
+                component: () => import('pages/Dashboard.vue')
+            },
+            {
+                path: 'logs',
+                component: () => import('pages/LogBrowser.vue')
+            },
+            {
+                path: 'beacons',
+                component: () => import('pages/BeaconViewer.vue')
+            }
         ]
     }
 ]

@@ -1,7 +1,6 @@
 <template>
     <div>
         <q-table
-            title="Beacons"
             :data="beacons"
             :columns="columns"
             hide-bottom
@@ -13,12 +12,12 @@
         >
             <template v-slot:top-left>
                 <p class="adjust-center">
-                    <span class="q-table__title">Beacon</span>
+                    <span class="q-table__title">Beacons</span>
                     <q-btn
                         flat dense round
                         icon="refresh"
                         color="primary"
-                        @click="$emit('beacon-refresh')"
+                        @click="$store.commit('db/clearBeacons')"
                     ><q-tooltip>Refresh</q-tooltip></q-btn>
                 </p>
             </template>
@@ -90,7 +89,10 @@
                 </q-tr>
                 <q-tr v-show="props.expand || autoExpand" :props="props">
                     <q-td colspan="100%">
-                        <advertisement :ad="props.row.ad" @showAccelChart="showAccelChart(props.row)" />
+                        <panel-advertisement
+                            :ad="props.row.advertisement"
+                            @showAccelChart="showAccelChart(props.row)"
+                        />
                     </q-td>
                 </q-tr>
             </template>
@@ -115,12 +117,12 @@
         </q-dialog>
         <q-dialog v-model="rssiChart.dialog">
             <q-card class="q-pa-md" :style="{minWidth: '75vw'}">
-                <rssi-chart :title="rssiChart.title" :rssis="rssiChart.data" />
+                <chart-rssi :title="rssiChart.title" :mac="rssiChart.mac" />
             </q-card >
         </q-dialog>
         <q-dialog v-model="accelChart.dialog">
             <q-card class="q-pa-md" :style="{minWidth: '75vw'}">
-                <acceleroment-chart :title="accelChart.title" :accels="accelChart.data" />
+                <chart-accelerometer :title="accelChart.title" :mac="accelChart.mac" />
             </q-card>
         </q-dialog>
     </div>
@@ -142,20 +144,15 @@
 
 <script>
 import moment from 'moment'
-import RssiChart from './RssiChart'
-import Advertisement from './Advertisement'
-import AcceleromentChart from './AccelerometerChart'
+import ChartRssi from './ChartRssi.vue'
+import PanelAdvertisement from './PanelAdvertisement.vue'
+import ChartAccelerometer from './ChartAccelerometer.vue'
 export default {
-    props: {
-        beacons: {
-            type: Array,
-            required: true
-        }
-    },
+    name: 'CardBeaconViewer',
     components: {
-        RssiChart,
-        Advertisement,
-        AcceleromentChart
+        PanelAdvertisement,
+        ChartRssi,
+        ChartAccelerometer
     },
     data () {
         return {
@@ -165,10 +162,10 @@ export default {
                     lable: 'Name',
                     align: 'left',
                     field: row => {
-                        if (row.ad.localName) {
-                            return row.ad.localName
-                        } else if (row.ad.msd && row.ad.msd.type) {
-                            return row.ad.msd.type
+                        if (row.advertisement.localName) {
+                            return row.advertisement.localName
+                        } else if (row.advertisement.manufacturerData && row.advertisement.manufacturerData.type) {
+                            return row.advertisement.manufacturerData.type
                         }
                         return '(NaN)'
                     },
@@ -203,15 +200,20 @@ export default {
             filterDialog: false,
             rssiChart: {
                 dialog: false,
-                data: [],
+                mac: '',
                 title: ''
             },
             accelChart: {
                 dialog: false,
-                data: [],
+                mac: '',
                 title: ''
             },
             autoExpand: false
+        }
+    },
+    computed: {
+        beacons () {
+            return this.$store.state.db.beacons
         }
     },
     methods: {
@@ -219,11 +221,11 @@ export default {
             const s = terms.search.toUpperCase()
             const result = rows.filter(row => {
                 if (row === false) return false
-                const ad = row.ad
-                const msd = row.ad.msd
+                const ad = row.advertisement
+                const msd = ad.manufacturerData
                 return (
                     row.mac.toUpperCase().indexOf(s) !== -1 ||
-                    ad.raw.indexOf(s) !== -1 ||
+                    ad.raw.toString('hex').toUpperCase().indexOf(s) !== -1 ||
                     (msd && msd.company && msd.company.toUpperCase().indexOf(s) !== -1) ||
                     (msd && msd.type && msd.type.toUpperCase().indexOf(s) !== -1)
                 ) && row.rssi > terms.rssi
@@ -232,22 +234,22 @@ export default {
             return result
         },
         chartTitle (row) {
-            if (row.ad.localName) {
-                return `${row.ad.localName} (${row.mac})`
-            } else if (row.ad.msd && row.ad.msd.type) {
-                return `${row.ad.msd.type} (${row.mac})`
+            if (row.advertisement.localName) {
+                return `${row.advertisement.localName} (${row.mac})`
+            } else if (row.advertisement.msd && row.advertisement.msd.type) {
+                return `${row.advertisement.msd.type} (${row.mac})`
             } else {
-                return row.mac
+                return `Beacon MAC: ${row.mac}`
             }
         },
         showRssiChart (row) {
             this.rssiChart.title = this.chartTitle(row)
-            this.rssiChart.data = row.rssis
+            this.rssiChart.mac = row.mac
             this.rssiChart.dialog = true
         },
         showAccelChart (row) {
             this.accelChart.title = this.chartTitle(row)
-            this.accelChart.data = row.accels
+            this.accelChart.mac = row.mac
             this.accelChart.dialog = true
         },
         onRowExpand (props) {

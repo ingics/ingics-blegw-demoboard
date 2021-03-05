@@ -2,6 +2,12 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 // import example from './module-example'
+import db from './db'
+import cfg from './cfg'
+import con from './con'
+import Parser from './parser'
+import M2mClient from './m2m-client'
+import MqttClient from './mqtt-clien'
 
 Vue.use(Vuex)
 
@@ -17,9 +23,15 @@ Vue.use(Vuex)
 export default function (/* { ssrContext } */) {
     const Store = new Vuex.Store({
         modules: {
-            // example
+            db,
+            cfg,
+            con
         },
-
+        plugins: [
+            new Parser(),
+            new M2mClient(),
+            new MqttClient()
+        ],
         // enable strict mode (adds overhead!)
         // for dev mode only
         strict: process.env.DEV

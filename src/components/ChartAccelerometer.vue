@@ -17,7 +17,8 @@
 <script>
 const moment = require('moment')
 export default {
-    props: ['title', 'accels'],
+    name: 'ChartAccelerometer',
+    props: ['title', 'mac'],
     data: () => ({
         loading: false,
         chartlib: null,
@@ -39,10 +40,12 @@ export default {
             interpolateNulls: 'relative',
             colors: ['blue', 'orange', 'green']
         },
-        slope: false
+        slope: false,
+        accels: null
     }),
     mounted () {
         this.chartOptions.title = this.title
+        this.accels = this.$store.getters['db/beacon'](this.mac).accels
     },
     computed: {
         chartData () {

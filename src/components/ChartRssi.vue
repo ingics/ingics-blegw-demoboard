@@ -40,7 +40,8 @@
 <script>
 const KalmanFilter = require('kalmanjs')
 export default {
-    props: ['title', 'rssis'],
+    name: 'ChartRssi',
+    props: ['title', 'mac'],
     data: () => ({
         loading: false,
         chartlib: null,
@@ -65,12 +66,15 @@ export default {
             r: 0.01,
             q: 16,
             enable: false
-        }
+        },
+        rssis: null
     }),
     mounted () {
         this.chartOptions.title = this.title
+        this.rssis = this.$store.getters['db/beacon'](this.mac).rssis
     },
     computed: {
+        /** @return {object} */
         chartData () {
             if (!this.chartlib) {
                 return null
@@ -97,6 +101,5 @@ export default {
             this.chartlib = api
         }
     }
-
 }
 </script>
