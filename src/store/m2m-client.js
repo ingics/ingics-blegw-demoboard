@@ -8,12 +8,12 @@ function doConnect (state) {
         this.connection = new net.Socket()
         this.connection.on('connect', function () {
             console.log('m2m-client', 'on connect')
-            me.store.commit('con/connected')
+            me.store.commit('connection/connected')
             const rl = readline.createInterface({ input: me.connection })
             rl.on('line', line => {
                 // console.log('m2m-client', 'line', line.trim())
-                if (!me.store.state.con.pause) {
-                    me.store.commit('con/message', line.trim())
+                if (!me.store.state.connection.pause) {
+                    me.store.commit('connection/message', line.trim())
                 }
             })
         })
@@ -22,7 +22,7 @@ function doConnect (state) {
         })
         this.connection.on('close', function () {
             console.log('m2m-client', 'on close')
-            me.store.commit('con/disconnected')
+            me.store.commit('connection/disconnected')
         })
         this.connection.on('timeout', function (data) {
             // not sure what should I do here
@@ -35,7 +35,7 @@ function doConnect (state) {
             // not sure what should I do here
             // seems I need to handle reconnect by my-self
             console.log('m2m-client', 'on error', error.toString())
-            me.store.commit('con/error', error)
+            me.store.commit('connection/error', error)
             me.connection.close()
             me.connection.connect(state.cfg.port, state.cfg.host)
         })
@@ -80,9 +80,9 @@ export default function () {
         store.subscribe(({ type, payload }, state) => {
             if (type === 'cfg/save') {
                 cfgSaveHandler.bind(me)(state)
-            } else if (type === 'con/connect') {
+            } else if (type === 'connection/connect') {
                 conConnectHandler.bind(me)(state)
-            } else if (type === 'con/disconnect') {
+            } else if (type === 'connection/disconnect') {
                 conDisconnectHandler.bind(me)(state)
             }
         })

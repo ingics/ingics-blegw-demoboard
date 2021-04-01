@@ -14,12 +14,12 @@
         >
             <template v-slot:top-right>
                 <q-btn
-                    v-if="$store.state.con.status === 'ok'"
+                    v-if="$store.state.connection.status === 'ok'"
                     outline rounded
-                    :color="$store.state.con.pause ? 'green-6' : 'orange-8'"
-                    :label="$store.state.con.pause ? 'resume' : 'pause'"
-                    :icon-right="$store.state.con.pause ? 'play_arrow' : 'pause'"
-                    @click="$store.commit('con/pause')"
+                    :color="$store.state.connection.pause ? 'green-6' : 'orange-8'"
+                    :label="$store.state.connection.pause ? 'resume' : 'pause'"
+                    :icon-right="$store.state.connection.pause ? 'play_arrow' : 'pause'"
+                    @click="$store.commit('connection/pause')"
                 />
             </template>
         </q-table>

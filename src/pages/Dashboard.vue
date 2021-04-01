@@ -20,7 +20,7 @@
                 </div>
                 <div class="q-pa-none q-ml-xs col items-stretch">
                     <q-item
-                        :clickable="$store.state.con.status === 'ok'"
+                        :clickable="$store.state.connection.status === 'ok'"
                         style="background-color: #5064b5"
                         class="q-pa-none q-ml-xs"
                         @click="$router.push('/logs')"
@@ -39,7 +39,7 @@
                 </div>
                 <div class="q-pa-none q-ml-xs col items-stretch">
                     <q-item
-                        :clickable="$store.state.con.status === 'ok'"
+                        :clickable="$store.state.connection.status === 'ok'"
                         style="background-color: #a270b1"
                         class="q-pa-none q-ml-xs"
                         @click="$router.push('/beacons')"
@@ -64,7 +64,7 @@
 
 <script>
 import ChartMessageCount from 'components/ChartMessageCount'
-import { CONSTAT_ERROR, CONSTAT_IDLE, CONSTAT_OK } from 'src/store/con/constants'
+import { CONSTAT_ERROR, CONSTAT_IDLE, CONSTAT_OK } from 'src/store/connection/constants'
 export default {
     name: 'Dashboard',
     components: {
@@ -73,9 +73,9 @@ export default {
     computed: {
         /** @return {string} connection status */
         connectionStatus () {
-            switch (this.$store.state.con.status) {
+            switch (this.$store.state.connection.status) {
             case CONSTAT_OK:
-                return this.$store.state.con.pause ? 'Paused' : 'Connected'
+                return this.$store.state.connection.pause ? 'Paused' : 'Connected'
             case CONSTAT_IDLE: return 'Disconnected'
             case CONSTAT_ERROR: return 'Error'
             default: return 'Unknown'
@@ -83,9 +83,9 @@ export default {
         },
         /** @return {string} color for indicate connection status */
         connectionStatusColor () {
-            switch (this.$store.state.con.status) {
+            switch (this.$store.state.connection.status) {
             case CONSTAT_OK:
-                return this.$store.state.con.pause ? '#3a9688' : '#7cb342'
+                return this.$store.state.connection.pause ? '#3a9688' : '#7cb342'
             case CONSTAT_IDLE: return '#f88c2b'
             case CONSTAT_ERROR: return '#ea6a7f'
             default: return 'grey'

@@ -17,9 +17,9 @@ export default function () {
         me.currentMessageCount = 0
 
         store.subscribe(({ type, payload }, state) => {
-            if (type === 'con/message') {
+            if (type === 'connection/message') {
                 messageHandler.bind(me)(state, payload)
-            } else if (type === 'con/connected') {
+            } else if (type === 'connection/connected') {
                 me.enabled = true
                 if (!me.messageCountTimer) {
                     me.messageCountTimer = setInterval(() => {
@@ -38,12 +38,12 @@ export default function () {
                         // }
                     }, 1000)
                 }
-            } else if (type === 'con/disconnected') {
+            } else if (type === 'connection/disconnected') {
                 if (me.messageCountTimer) {
                     clearInterval(me.messageCountTimer)
                     me.messageCountTimer = null
                 }
-            } else if (type === 'con/ended') {
+            } else if (type === 'connection/ended') {
                 me.store.commit('db/clearMessageCounter')
                 me.store.commit('db/clearBeacons')
                 me.store.commit('db/clearMessages')

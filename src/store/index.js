@@ -4,7 +4,7 @@ import Vuex from 'vuex'
 // import example from './module-example'
 import db from './db'
 import cfg from './cfg'
-import con from './con'
+import connection from './connection'
 import Parser from './parser'
 import M2mClient from './m2m-client'
 import MqttClient from './mqtt-clien'
@@ -25,7 +25,7 @@ export default function (/* { ssrContext } */) {
         modules: {
             db,
             cfg,
-            con
+            connection
         },
         plugins: [
             new Parser(),

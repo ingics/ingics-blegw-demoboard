@@ -11,25 +11,25 @@ function doConnect (state) {
         this.connection.on('connect', function (connack) {
             console.log('mqtt-client', 'on connect', connack)
             me.connection.subscribe(state.cfg.topic)
-            me.store.commit('con/connected')
+            me.store.commit('connection/connected')
         })
         this.connection.on('message', function (topic, payload) {
             // console.log('mqtt-client', 'on message', payload.toString())
-            if (!me.store.state.con.pause) {
-                me.store.commit('con/message', payload.toString())
+            if (!me.store.state.connection.pause) {
+                me.store.commit('connection/message', payload.toString())
             }
         })
         this.connection.on('close', function () {
             console.log('mqtt-client', 'on close')
-            me.store.commit('con/disconnected')
+            me.store.commit('connection/disconnected')
         })
         this.connection.on('end', function () {
             console.log('mqtt-client', 'on end')
-            me.store.commit('con/ended')
+            me.store.commit('connection/ended')
         })
         this.connection.on('error', function (error) {
             console.log('mqtt-client', 'on error', error.toString())
-            me.store.commit('con/error', error)
+            me.store.commit('connection/error', error)
         })
     }
 }
@@ -70,9 +70,9 @@ export default function () {
         store.subscribe(({ type, payload }, state) => {
             if (type === 'cfg/save') {
                 cfgSaveHandler.bind(me)(state)
-            } else if (type === 'con/connect') {
+            } else if (type === 'connection/connect') {
                 conConnectHandler.bind(me)(state)
-            } else if (type === 'con/disconnect') {
+            } else if (type === 'connection/disconnect') {
                 conDisconnectHandler.bind(me)(state)
             }
         })

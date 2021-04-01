@@ -30,29 +30,29 @@
     </q-header>
 
     <q-page-container class="bg-grey-2">
-        <q-banner v-if="$store.state.con.error" inline-actions class="bg-red-5 text-white">
-            {{ $store.state.con.error }}
+        <q-banner v-if="$store.state.connection.error" inline-actions class="bg-red-5 text-white">
+            {{ $store.state.connection.error }}
             <template v-slot:action>
-                <q-btn flat color="white" label="STOP" @click="$store.dispatch('con/disconnect')" />
+                <q-btn flat color="white" label="STOP" @click="$store.dispatch('connection/disconnect')" />
             </template>
         </q-banner>
         <router-view />
         <q-page-sticky position="bottom-right" :offset="[18, 18]" class="q-mt-md">
             <q-btn
-                v-if="$store.state.con.status === 'idle'"
+                v-if="$store.state.connection.status === 'idle'"
                 fab dense
                 icon-right="play_arrow"
                 color="green"
                 label='Connect'
-                @click="$store.dispatch('con/connect')"
+                @click="$store.dispatch('connection/connect')"
             />
             <q-btn
-                v-if="$store.state.con.status != 'idle'"
+                v-if="$store.state.connection.status != 'idle'"
                 fab dense
                 icon-right="stop"
                 color="red"
                 label='Stop'
-                @click="$store.dispatch('con/disconnect'); $router.push('/')"
+                @click="$store.dispatch('connection/disconnect'); $router.push('/')"
             />
         </q-page-sticky>
         <dialog-connection-setting v-model="showConfiguration" />
@@ -81,7 +81,7 @@
 <script>
 import Vue from 'vue'
 import DialogConnectionSetting from 'components/DialogConnectionSetting'
-import { CONSTAT_ERROR, CONSTAT_IDLE, CONSTAT_OK } from 'src/store/con/constants'
+import { CONSTAT_ERROR, CONSTAT_IDLE, CONSTAT_OK } from 'src/store/connection/constants'
 export default {
     name: 'MyLayout',
     components: {
@@ -102,7 +102,7 @@ export default {
         },
         /** @return {string} color for indicate connection status */
         connectionStatusColor () {
-            switch (this.$store.state.con.status) {
+            switch (this.$store.state.connection.status) {
             case CONSTAT_OK: return 'green-6'
             case CONSTAT_IDLE: return 'white'
             case CONSTAT_ERROR: return 'red-5'
