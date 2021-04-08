@@ -61,6 +61,9 @@
             <div v-if="ad.manufacturerData.range">
                 Range: {{ ad.manufacturerData.range }}mm
             </div>
+            <div v-if="ad.manufacturerData.gp">
+                Atmospheric Pressure: {{ ad.manufacturerData.gp }}hPa
+            </div>
             <div v-if="ad.manufacturerData.events">
                 Events:
                 <transition name="slide-fade" mode="out-in">
