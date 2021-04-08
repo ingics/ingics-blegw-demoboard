@@ -1,10 +1,6 @@
 # Ingics BLE-GW Demo Board
 > Dashboard application for Ingics BLEGW demostration or testing
 
-![](../assets/screenshot-gwcfg.png) 
-![](../assets/screenshot-beacons.png)
-![](../assets/screenshot-accel-chart.png)
-
 ## Installation
 
 Linux:
@@ -17,14 +13,17 @@ The application will be released as a portable app file (without installer) for 
 
 ## Usage
 
+### Configurations
+Need to configure iGS03X and APP's connection.
+![](../assets/screenshot-configurations.png) 
+
 ### Using M2M
 iGS03:
 - Mode: M2M Server
 - Port: (any avaiable port number)
 
-APP Gateway:
-- Mode: M2M
-- Name: (any string as gateway name)
+APP Configuration:
+- Mode: M2M (TCP Client)
 - Port: (same port number as iGS03)
 
 ### Using MQTT
@@ -34,22 +33,29 @@ iGS03:
 - Port: 2883 (or port number served by the broker)
 - Publish Topic: (any topic string for identify the device)
 
-APP Gateway:
-- Mode: M2M
-- Name: (any string as gateway name)
+APP Configuration:
+- Mode: MQTT Client
 - Host: test.mosquitto.org (same as iGS03 setting)
 - Port: 2883 (same as iGS03 setting)
 - Topic: (same as iGS03 setting)
 
-### Activate Connection
-- Click gateway card for activate gateway (broker) connection
-- Logs button for switch to log browser
-    - support message parsing (click on log)
-- Beacon button for switch to beacon browser
-    - support rssi filter
-    - support test search (filter)
-    - support rssi chart
-    - support accelerometer reading chart
+### Dashboard
+After connected, # of Messages and # of Beacons will display on dashboard.
+![](../assets/screenshot-dashboard.png) 
+
+### Browse Messages
+Click on the panel of "# of Messages" on dashboard.
+![](../assets/screenshot-logs.png) 
+
+Click on a raw message to display the parsed result.
+![](../assets/screenshot-log-parser.png) 
+
+### Browse Beacons
+Click on the panel of "# of Beacons" on dashboard.
+![](../assets/screenshot-beacons.png)
+
+Click the RSSI icon in detail view to display the RSSI chart of the beacon.
+![](../assets/screenshot-rssi-chart.png)
 
 ## Development Setup
 
