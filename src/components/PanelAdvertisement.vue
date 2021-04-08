@@ -49,20 +49,20 @@
             <div v-if="ad.manufacturerData.battery">
                 Battery: {{ ad.manufacturerData.battery }}V
             </div>
-            <div v-if="ad.manufacturerData.temperature">
+            <div v-if="Object.keys(ad.manufacturerData).includes('temperature')">
                 Temperature: {{ ad.manufacturerData.temperature }}°C
             </div>
-            <div v-if="ad.manufacturerData.temperatureExt">
+            <div v-if="Object.keys(ad.manufacturerData).includes('temperatureExt')">
                 External Temperature: {{ ad.manufacturerData.temperatureExt }}°C
             </div>
-            <div v-if="ad.manufacturerData.humidity">
+            <div v-if="Object.keys(ad.manufacturerData).includes('humidity')">
                 Humidity: {{ ad.manufacturerData.humidity }}%
             </div>
-            <div v-if="ad.manufacturerData.range">
-                Range: {{ ad.manufacturerData.range }}mm
+            <div v-if="Object.keys(ad.manufacturerData).includes('range')">
+                Range: {{ ad.manufacturerData.range }} mm
             </div>
-            <div v-if="ad.manufacturerData.gp">
-                Atmospheric Pressure: {{ ad.manufacturerData.gp }}hPa
+            <div v-if="Object.keys(ad.manufacturerData).includes('gp')">
+                Atmospheric Pressure: {{ ad.manufacturerData.gp }} hPa
             </div>
             <div v-if="ad.manufacturerData.events">
                 Events:
