@@ -54,12 +54,12 @@ export function insertOrUpdateBeacon (state, data) {
         beacon.timestamp = data.timestamp
         beacon.advertisement = data.advertisement
         beacon.rssis.push({ ts: data.timestamp, rssi: data.rssi })
-        if (beacon.rssis.length > 200) {
-            beacon.rssis.splice(0, beacon.rssis.length - 60)
+        if (beacon.rssis.length > 180) {
+            beacon.rssis.splice(0, beacon.rssis.length - 180)
         }
         beacon.accels.push({ ts: data.timestamp, accel: accel })
-        if (beacon.accels.length > 200) {
-            beacon.accels.splice(0, beacon.accels.length - 60)
+        if (beacon.accels.length > 180) {
+            beacon.accels.splice(0, beacon.accels.length - 180)
         }
     } else {
         state.beacons.push({
