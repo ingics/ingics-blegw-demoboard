@@ -47,7 +47,7 @@ export function insertOrUpdateBeacon (state, data) {
     const msd = data.advertisement.manufacturerData
     let accel
     if (msd && Object.keys(msd).includes('accel')) accel = msd.accel
-    if (msd && Object.keys(msd).includes('accels')) accel = msd.accel[0]
+    if (msd && Object.keys(msd).includes('accels')) accel = msd.accels[0]
     const beacon = state.beacons.find(v => v.mac === data.beacon)
     if (beacon) {
         beacon.rssi = data.rssi
