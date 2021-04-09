@@ -36,5 +36,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: artifact ${{ matrix.os }}
-        path: dist/electron/Packaged/*
+        path: |
+          dist/electron/Packaged/*.AppImage
+          dist/electron/Packaged/*.exe
         if-no-files-found: error
