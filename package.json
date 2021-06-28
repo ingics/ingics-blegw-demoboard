@@ -1,6 +1,6 @@
 {
   "name": "ingics-blegw-demoboard",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Dashboard application for Ingics BLEGW demostration or testing",
   "repository": "github:ingics/ingics-blegw-demoboard",
   "productName": "Ingics BLE-GW Demo Board",
