@@ -77,6 +77,11 @@ export function clearBeacons (state) {
     state.beacons.splice(0, state.beacons.length)
 }
 
+export function setBeaconTTL (state, data) {
+    console.log(`mutation setBeaconTTL ${data}`)
+    state.beaconTTL = data
+}
+
 export function beaconTTL (state) {
     const now = Date.now()
     while (true) {

@@ -26,15 +26,29 @@
                     outlined borderless dense debounce="300"
                     v-model="filter.search" placeholder="Search"
                 >
-                    <template v-slot:append>
+                    <template v-slot:prepend>
                         <q-icon name="search" />
                     </template>
                 </q-input>
-                <q-btn
+                <q-select
+                    style="min-width: 120px"
+                    outlined borderless dense label="Retain Time"
+                    v-model="ttl" :options="ttls" emit-value map-options
+                >
+                    <template v-slot:prepend><q-icon name="timer" /></template>
+                </q-select>
+                <q-select
+                    style="min-width: 110px"
+                    outlined borderless dense label="RSSI Filter"
+                    v-model="filter.rssi" :options="rssiThresholds" emit-value map-options
+                >
+                    <template v-slot:prepend><q-icon name="filter_list" /></template>
+                </q-select>
+                <!-- <q-btn
                     flat round
                     icon="filter_list"
                     @click="filterDialog = !filterDialog"
-                ><q-tooltip>Filter</q-tooltip></q-btn>
+                ><q-tooltip>Filter</q-tooltip></q-btn> -->
             </template>
             <template v-slot:header="props">
                 <q-tr :props="props">
@@ -194,7 +208,7 @@ export default {
                 sortBy: undefined
             },
             filter: {
-                rssi: -100,
+                rssi: -80,
                 search: ''
             },
             filterDialog: false,
@@ -208,12 +222,36 @@ export default {
                 mac: '',
                 title: ''
             },
-            autoExpand: false
+            autoExpand: false,
+            ttls: [
+                { label: '10 seconds', value: 10 },
+                { label: '30 seconds', value: 30 },
+                { label: '1 minute', value: 60 },
+                { label: '3 minutes', value: 180 },
+                { label: '5 minutes', value: 300 }
+            ],
+            rssiThresholds: [
+                { label: '-50 dBm', value: -50 },
+                { label: '-60 dBm', value: -60 },
+                { label: '-70 dBm', value: -70 },
+                { label: '-80 dBm', value: -80 },
+                { label: '-90 dBm', value: -90 },
+                { label: '-100 dBm', value: -100 },
+                { label: '-120 dBm', value: -120 }
+            ]
         }
     },
     computed: {
         beacons () {
             return this.$store.state.db.beacons
+        },
+        ttl: {
+            get () {
+                return this.$store.state.db.beaconTTL
+            },
+            set (v) {
+                this.$store.dispatch('db/setBeaconTTL', v)
+            }
         }
     },
     methods: {

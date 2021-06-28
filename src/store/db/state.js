@@ -1,7 +1,7 @@
 export default function () {
     return {
-        beaconTTL: 5,
-        messageTTL: 60,
+        beaconTTL: 60,
+        messageTTL: 10,
         maxMessages: 100,
         totalMessages: 0,
         beacons: [],
