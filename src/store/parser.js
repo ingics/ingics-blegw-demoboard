@@ -4,9 +4,11 @@ function messageHandler (state, payload) {
     const me = this
     parseMessage(payload, data => {
         if (!['GPRP', 'LRAD', '1MAD'].includes(data.type)) { return }
-        me.currentMessageCount += 1
-        me.store.commit('db/insertOrUpdateBeacon', data)
-        me.store.commit('db/insertMessage', { ts: data.timestamp, raw: data.fullMessage })
+        if (data.rssi >= me.store.state.db.rssiThreshold) {
+            me.currentMessageCount += 1
+            me.store.commit('db/insertOrUpdateBeacon', data)
+            me.store.commit('db/insertMessage', { ts: data.timestamp, raw: data.fullMessage })
+        }
     })
 }
 

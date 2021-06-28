@@ -13,6 +13,14 @@
             @row-click="selectLog"
         >
             <template v-slot:top-right>
+                <q-select
+                    class="q-mx-sm"
+                    style="min-width: 110px"
+                    outlined borderless dense label="RSSI Filter" rounded
+                    v-model="rssiFilter" :options="rssiThresholds" emit-value map-options
+                >
+                    <template v-slot:prepend><q-icon name="filter_list" /></template>
+                </q-select>
                 <q-btn
                     v-if="$store.state.connection.status === 'ok'"
                     outline rounded
@@ -80,7 +88,16 @@ export default {
                 rowsPerPage: 0
             },
             detailDialog: false,
-            selectedLog: undefined
+            selectedLog: undefined,
+            rssiThresholds: [
+                { label: '-50 dBm', value: -50 },
+                { label: '-60 dBm', value: -60 },
+                { label: '-70 dBm', value: -70 },
+                { label: '-80 dBm', value: -80 },
+                { label: '-90 dBm', value: -90 },
+                { label: '-100 dBm', value: -100 },
+                { label: '-120 dBm', value: -120 }
+            ]
         }
     },
     methods: {
@@ -110,6 +127,12 @@ export default {
                 this.selectedLog = log
                 this.detailDialog = true
             })
+        }
+    },
+    computed: {
+        rssiFilter: {
+            get () { return this.$store.state.db.rssiThreshold },
+            set (v) { this.$store.dispatch('db/setRssiThreshold', v) }
         }
     }
 }

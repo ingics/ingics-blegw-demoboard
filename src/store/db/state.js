@@ -1,5 +1,6 @@
 export default function () {
     return {
+        rssiThreshold: -80,
         beaconTTL: 60,
         messageTTL: 10,
         maxMessages: 100,

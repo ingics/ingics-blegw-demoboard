@@ -78,7 +78,7 @@ export function clearBeacons (state) {
 }
 
 export function setBeaconTTL (state, data) {
-    console.log(`mutation setBeaconTTL ${data}`)
+    // console.log(`mutation setBeaconTTL ${data}`)
     state.beaconTTL = data
 }
 
@@ -92,4 +92,9 @@ export function beaconTTL (state) {
             return
         }
     }
+}
+
+export function setRssiThreshold (state, data) {
+    // console.log(`mutation setRssiThreshold ${data}`)
+    state.rssiThreshold = data
 }

@@ -23,7 +23,8 @@
             </template>
             <template v-slot:top-right>
                 <q-input
-                    outlined borderless dense debounce="300"
+                    class="q-mx-xs"
+                    rounded outlined borderless dense debounce="300"
                     v-model="filter.search" placeholder="Search"
                 >
                     <template v-slot:prepend>
@@ -31,16 +32,18 @@
                     </template>
                 </q-input>
                 <q-select
+                    class="q-mx-xs"
                     style="min-width: 120px"
-                    outlined borderless dense label="Retain Time"
+                    rounded outlined borderless dense label="Retain Time"
                     v-model="ttl" :options="ttls" emit-value map-options
                 >
                     <template v-slot:prepend><q-icon name="timer" /></template>
                 </q-select>
                 <q-select
+                    class="q-mx-xs"
                     style="min-width: 110px"
-                    outlined borderless dense label="RSSI Filter"
-                    v-model="filter.rssi" :options="rssiThresholds" emit-value map-options
+                    rounded outlined borderless dense label="RSSI Filter"
+                    v-model="rssiFilter" :options="rssiThresholds" emit-value map-options
                 >
                     <template v-slot:prepend><q-icon name="filter_list" /></template>
                 </q-select>
@@ -111,7 +114,7 @@
                 </q-tr>
             </template>
         </q-table>
-        <q-dialog v-model="filterDialog">
+        <!-- <q-dialog v-model="filterDialog">
             <q-card class="q-pa-md" :style="{minWidth: '65vw'}">
                 <q-item>
                     <q-item-section avatar class="q-pr-sm">
@@ -119,7 +122,7 @@
                     </q-item-section>
                     <q-item-section>
                         <q-slider
-                            v-model="filter.rssi"
+                            v-model="rssiFilter"
                             :min="-125"
                             :max="0"
                             label
@@ -128,7 +131,7 @@
                     </q-item-section>
                 </q-item>
             </q-card>
-        </q-dialog>
+        </q-dialog> -->
         <q-dialog v-model="rssiChart.dialog">
             <q-card class="q-pa-md" :style="{minWidth: '75vw'}">
                 <chart-rssi :title="rssiChart.title" :mac="rssiChart.mac" />
@@ -208,10 +211,9 @@ export default {
                 sortBy: undefined
             },
             filter: {
-                rssi: -80,
                 search: ''
             },
-            filterDialog: false,
+            // filterDialog: false,
             rssiChart: {
                 dialog: false,
                 mac: '',
@@ -246,16 +248,17 @@ export default {
             return this.$store.state.db.beacons
         },
         ttl: {
-            get () {
-                return this.$store.state.db.beaconTTL
-            },
-            set (v) {
-                this.$store.dispatch('db/setBeaconTTL', v)
-            }
+            get () { return this.$store.state.db.beaconTTL },
+            set (v) { this.$store.dispatch('db/setBeaconTTL', v) }
+        },
+        rssiFilter: {
+            get () { return this.$store.state.db.rssiThreshold },
+            set (v) { this.$store.dispatch('db/setRssiThreshold', v) }
         }
     },
     methods: {
         doFilter (rows, terms, cols, getCellValue) {
+            const me = this
             const s = terms.search.toUpperCase()
             const result = rows.filter(row => {
                 if (row === false) return false
@@ -266,7 +269,7 @@ export default {
                     ad.raw.toString('hex').toUpperCase().indexOf(s) !== -1 ||
                     (msd && msd.company && msd.company.toUpperCase().indexOf(s) !== -1) ||
                     (msd && msd.type && msd.type.toUpperCase().indexOf(s) !== -1)
-                ) && row.rssi > terms.rssi
+                ) && row.rssi > me.rssiFilter
             })
             this.autoExpand = result.length <= 2
             return result
