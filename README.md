@@ -5,11 +5,11 @@
 
 Linux:
 
-The application will be released in appImage (https://appimage.org/) format for Linux, you can simply execute the file from console or desktop GUI. The application will be tested on Ubuntu 18.04.
+The application will be released in appImage (https://appimage.org/) format for Linux, you can download the file from release page, make it executable and run it directly. The application has been tested on Ubuntu 20.04.
 
 Windows:
 
-The application will be released as a portable app file (without installer) for Windows. The application will be tested on Windows 10.
+The application will be released as a portable app file (without installer) for Windows 10.
 
 ## Usage
 
@@ -27,6 +27,9 @@ APP Configuration:
 - Port: (same port number as iGS03)
 
 ### Using MQTT
+System architecture of using MQTT broker.
+![](../assets/mqtt-arch.png)
+
 iGS03:
 - Mode: MQTT Client
 - Host: test.mosquitto.org (or any broker support open autherticate)
