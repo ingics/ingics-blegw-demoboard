@@ -1,5 +1,4 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import { createStore } from 'vuex'
 
 // import example from './module-example'
 import db from './db'
@@ -8,8 +7,6 @@ import connection from './connection'
 import Parser from './parser'
 import M2mClient from './m2m-client'
 import MqttClient from './mqtt-clien'
-
-Vue.use(Vuex)
 
 /*
  * If not building with SSR mode, you can
@@ -21,20 +18,22 @@ Vue.use(Vuex)
  */
 
 export default function (/* { ssrContext } */) {
-    const Store = new Vuex.Store({
+    const Store = createStore({
         modules: {
             db,
             cfg,
             connection
         },
+
         plugins: [
             new Parser(),
             new M2mClient(),
             new MqttClient()
         ],
+
         // enable strict mode (adds overhead!)
-        // for dev mode only
-        strict: process.env.DEV
+        // for dev mode and --debug builds only
+        strict: process.env.DEBUGGING
     })
 
     return Store

@@ -1,4 +1,5 @@
 import { app, BrowserWindow, nativeTheme } from 'electron'
+import path from 'path'
 
 try {
   if (process.platform === 'win32' && nativeTheme.shouldUseDarkColors === true) {
@@ -25,25 +26,34 @@ function createWindow () {
     height: 600,
     useContentSize: true,
     webPreferences: {
-      // Change from /quasar.conf.js > electron > nodeIntegration;
-      // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration
-      nodeIntegration: QUASAR_NODE_INTEGRATION,
-
-      // More info: /quasar-cli/developing-electron-apps/electron-preload-script
-      // preload: path.resolve(__dirname, 'electron-preload.js')
+      // we enable contextIsolation (Electron 12+ has it enabled by default anyway)
+      contextIsolation: true,
+      // we use a new way to reference the preload script
+      // (it's going to be needed, so add it and create the file if it's not there already)
+      preload: path.resolve(__dirname, process.env.QUASAR_ELECTRON_PRELOAD)
     },
     icon: app.isPackaged ? require('path').join(process.resourcesPath, 'icon.png') : require('path').join(__dirname, '../icons/icon.png')
   })
 
-  mainWindow.removeMenu()
+  // mainWindow.removeMenu()
   mainWindow.loadURL(process.env.APP_URL)
 
   mainWindow.on('closed', () => {
     mainWindow = null
   })
+
+  if (process.env.DEBUGGING) {
+    // if on DEV or Production with debug enabled
+    mainWindow.webContents.openDevTools()
+  } else {
+    // we're on production; no access to devtools pls
+    mainWindow.webContents.on('devtools-opened', () => {
+      mainWindow.webContents.closeDevTools()
+    })
+  }
 }
 
-// try to disable htto cache
+// try to disable http cache
 app.commandLine.appendSwitch('disable-http-cache')
 
 app.on('ready', createWindow)

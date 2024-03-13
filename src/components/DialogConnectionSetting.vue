@@ -54,11 +54,11 @@
     </q-dialog>
 </template>
 
-<style lang="sass" scoped>
+<!-- <style lang="sass" scoped>
     .gateway-setting-header
         color: white
         background-color: $primary
-</style>
+</style> -->
 
 <script>
 import { APPMODE_M2M_CLIENT, APPMODE_MQTT_CLIENT } from 'src/store/cfg/constants'
@@ -108,7 +108,7 @@ export default {
             this.dialogValue = v
         },
         dialogValue (v) {
-            this.$emit('input', v)
+            this.$emit('update:model-value', v)
         }
     },
     methods: {

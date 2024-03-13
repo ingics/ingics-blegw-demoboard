@@ -168,6 +168,7 @@
 export default {
     name: 'PanelAdvertisement',
     props: ['ad'],
+    emits: ['showAccelChart'],
     methods: {
         eventList (events) {
             const ans = []

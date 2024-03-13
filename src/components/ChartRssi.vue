@@ -38,10 +38,14 @@
 </template>
 
 <script>
+import { GChart } from 'vue-google-charts'
 const KalmanFilter = require('kalmanjs')
 export default {
     name: 'ChartRssi',
     props: ['title', 'mac'],
+    components: {
+        GChart
+    },
     data: () => ({
         loading: false,
         chartlib: null,

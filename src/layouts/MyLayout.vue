@@ -65,7 +65,7 @@
                         <q-item-label>Version: {{ appVersion }}</q-item-label>
                         <q-item-label>Commit: {{ appHash }}</q-item-label>
                         <q-item-label>NodeJS: {{ nodejsVersion }}</q-item-label>
-                        <q-item-label>Vue: {{ vueVersion }}</q-item-label>
+                        <!-- <q-item-label>Vue: {{ vueVersion }}</q-item-label> -->
                         <q-item-label>Quasar: {{ $q.version }}</q-item-label>
                         <q-item-label>Electron: {{ electronVersion }}</q-item-label>
                         <q-item-label>Parser: {{ parserVersion }}</q-item-label>
@@ -79,7 +79,6 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import DialogConnectionSetting from 'components/DialogConnectionSetting'
 import { CONSTAT_ERROR, CONSTAT_IDLE, CONSTAT_OK } from 'src/store/connection/constants'
 export default {
@@ -112,7 +111,7 @@ export default {
         appHash: () => process.env.APP_HASH,
         appVersion: () => process.env.APP_VERSION,
         electronVersion: () => process.env.ELECTRON_VERSION,
-        vueVersion: () => Vue.version,
+        // vueVersion: () => Vue.version,
         nodejsVersion: () => process.version,
         parserVersion: () => process.env.PARSER_VERSION
     },

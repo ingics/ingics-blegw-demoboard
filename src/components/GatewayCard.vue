@@ -68,6 +68,7 @@ export default {
             require: true
         }
     },
+    emits: ['selected', 'setting', 'delete'],
     data () {
         return {
 

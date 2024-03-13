@@ -11,8 +11,12 @@
 </template>
 
 <script>
+import { GChart } from 'vue-google-charts'
 export default {
     name: 'MessagesChart',
+    components: {
+        GChart
+    },
     data () {
         return {
             chartlib: null,

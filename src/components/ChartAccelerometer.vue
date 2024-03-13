@@ -15,10 +15,14 @@
 </template>
 
 <script>
+import { GChart } from 'vue-google-charts'
 const moment = require('moment')
 export default {
     name: 'ChartAccelerometer',
     props: ['title', 'mac'],
+    components: {
+        GChart
+    },
     data: () => ({
         loading: false,
         chartlib: null,
