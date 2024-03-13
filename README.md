@@ -15,12 +15,12 @@ The application will be released as a portable app file (without installer) for 
 
 ### Configurations
 Need to configure iGS03X and APP's connection.
-![](../assets/screenshot-configurations.png) 
+![](../assets/screenshot-configurations.png)
 
 ### Using M2M
 iGS03:
 - Mode: M2M Server
-- Port: (any avaiable port number)
+- Port: (any available port number)
 
 APP Configuration:
 - Mode: M2M (TCP Client)
@@ -32,7 +32,7 @@ System architecture of using MQTT broker.
 
 iGS03:
 - Mode: MQTT Client
-- Host: test.mosquitto.org (or any broker support open autherticate)
+- Host: test.mosquitto.org (or any broker support open authenticate)
 - Port: 2883 (or port number served by the broker)
 - Publish Topic: (any topic string for identify the device)
 
@@ -44,14 +44,14 @@ APP Configuration:
 
 ### Dashboard
 After connected, # of Messages and # of Beacons will display on dashboard.
-![](../assets/screenshot-dashboard.png) 
+![](../assets/screenshot-dashboard.png)
 
 ### Browse Messages
 Click on the panel of "# of Messages" on dashboard.
-![](../assets/screenshot-logs.png) 
+![](../assets/screenshot-logs.png)
 
 Click on a raw message to display the parsed result.
-![](../assets/screenshot-log-parser.png) 
+![](../assets/screenshot-log-parser.png)
 
 ### Browse Beacons
 Click on the panel of "# of Beacons" on dashboard.
@@ -67,25 +67,12 @@ Click the RSSI icon in detail view to display the RSSI chart of the beacon.
 npm install
 ```
 
-### Install quasar
-```bash
-npm install -g @quasar/cli
-```
-
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
-quasar dev -m electron
-```
-or
 ```bash
 npm run serve
 ```
 
 ### Build the app for production
-```bash
-quasar build -m electron
-```
-or 
 ```bash
 npm run build
 ```
