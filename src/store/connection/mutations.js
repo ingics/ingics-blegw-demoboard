@@ -34,7 +34,13 @@ export function connect (state) {
 }
 
 export function disconnect (state) {
-    // do nothing here
+    // release error state, user should already notice the error
+    if (state.status === CONSTAT_ERROR) {
+        state.status = CONSTAT_IDLE
+        state.error = null
+        state.pause = false
+    }
+    // do nothing for disconnect
     // the client plugins will handle it
 }
 

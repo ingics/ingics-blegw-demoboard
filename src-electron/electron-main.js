@@ -1,6 +1,7 @@
 import { app, BrowserWindow, nativeTheme, ipcMain } from 'electron'
 import net from 'net'
 import path from 'path'
+import mqtt from 'mqtt'
 import readline from 'readline'
 
 try {
@@ -73,6 +74,8 @@ function m2mConnect (_event, { host, port }) {
     })
     socket.on('end', () => {
         console.log('m2m-client', 'on end')
+        socket = null
+        mainWindow.webContents.send('m2m-end')
     })
     socket.on('close', () => {
         console.log('m2m-client', 'on close')
@@ -100,14 +103,52 @@ function m2mDisconnect (_event) {
     console.log('m2m-client', 'close connection')
     if (socket) {
         socket.end()
-        socket = null
+    }
+}
+
+let client = null
+
+function mqttConnect (_event, { host, port, topic }) {
+    console.log('mqtt-client', 'connect', host, port, topic)
+    client = mqtt.connect({ host, port })
+    client.on('connect', function (connack) {
+        console.log('mqtt-client', 'on connect', connack)
+        client.subscribe(topic)
+        mainWindow.webContents.send('mqtt-connect')
+    })
+    client.on('message', function (_topic, payload) {
+        // console.log('mqtt-client', 'on message', payload.toString())
+        mainWindow.webContents.send('mqtt-message', payload.toString())
+    })
+    client.on('close', function () {
+        console.log('mqtt-client', 'on close')
+        client = null
+        mainWindow.webContents.send('mqtt-close')
+    })
+    client.on('end', function () {
+        console.log('mqtt-client', 'on end')
+        client = null
+        mainWindow.webContents.send('mqtt-end')
+    })
+    client.on('error', function (error) {
+        console.log('mqtt-client', 'on error', error.toString())
+        client.end()
+        mainWindow.webContents.send('mqtt-error', error.toString())
+    })
+}
+
+function mqttDisconnect (_event) {
+    console.log('mqtt-client', 'close connection')
+    if (client) {
+        client.end()
     }
 }
 
 app.on('ready', () => {
     ipcMain.on('m2m-connect', m2mConnect)
     ipcMain.on('m2m-disconnect', m2mDisconnect)
-
+    ipcMain.on('mqtt-connect', mqttConnect)
+    ipcMain.on('mqtt-disconnect', mqttDisconnect)
     createWindow()
 })
 

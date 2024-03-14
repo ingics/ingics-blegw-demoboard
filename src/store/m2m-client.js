@@ -29,6 +29,11 @@ function onConnect () {
     this.store.commit('connection/connected')
 }
 
+function onEnd () {
+    console.log('m2m-client', 'on end')
+    this.store.commit('connection/ended')
+}
+
 function onClose () {
     console.log('m2m-client', 'on close')
     this.store.commit('connection/disconnected')
@@ -53,6 +58,7 @@ export default function () {
 
     window.m2m.onConnect(onConnect.bind(me))
     window.m2m.onClose(onClose.bind(me))
+    window.m2m.onEnd(onEnd.bind(me))
     window.m2m.onError(onError.bind(me))
     window.m2m.onLine(onLine.bind(me))
 
