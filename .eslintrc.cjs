@@ -52,6 +52,7 @@ module.exports = {
 
   // add your custom rules here
   rules: {
+    indent: ['warn', 4],
 
     // allow async-await
     'generator-star-spacing': 'off',
