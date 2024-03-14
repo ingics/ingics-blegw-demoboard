@@ -15,3 +15,13 @@
  *     doAThing: () => {}
  *   })
  */
+const { contextBridge, ipcRenderer } = require('electron')
+
+contextBridge.exposeInMainWorld('m2m', {
+    connect: (host, port) => ipcRenderer.send('m2m-connect', { host, port }),
+    disconnect: () => ipcRenderer.send('m2m-disconnect'),
+    onConnect: (callback) => ipcRenderer.on('m2m-connect', (_event) => callback()),
+    onLine: (callback) => ipcRenderer.on('m2m-line', (_event, line) => callback(line)),
+    onClose: (callback) => ipcRenderer.on('m2m-close', (_event) => callback()),
+    onError: (callback) => ipcRenderer.on('m2m-error', (_event, err) => callback(err))
+})
