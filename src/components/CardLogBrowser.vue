@@ -2,13 +2,13 @@
     <div>
         <q-table
             title="Received Messages"
-            :data="$store.state.db.messages"
+            :rows="$store.state.db.messages"
             :columns="columns"
             hide-header
             hide-bottom
             wrap-cells
             :grid="$q.screen.xs"
-            :pagination.sync="pageOption"
+            :pagination="pageOption"
             class="q-pa-md"
             @row-click="selectLog"
         >

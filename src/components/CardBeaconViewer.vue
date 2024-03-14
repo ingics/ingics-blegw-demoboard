@@ -1,11 +1,11 @@
 <template>
     <div>
         <q-table
-            :data="beacons"
+            :rows="beacons"
             :columns="columns"
             hide-bottom
             :filter="filter"
-            :pagination.sync="pageOption"
+            :pagination="pageOption"
             class="q-pa-md"
             :filter-method="doFilter"
             row-key="mac"
